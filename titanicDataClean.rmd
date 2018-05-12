@@ -1,48 +1,199 @@
 ---
 title: "Titanic Data Clean"
 author: "Ricardo Garcia Ruiz"
-date: "11 de mayo de 2018"
+date: '`r format(Sys.Date(),"%e de %B, %Y")`'
 output:
-  word_document:
-    toc: TRUE
-    highlight: default
-    toc_depth: 3
-  pdf_document:
-    toc: TRUE
-    highlight: default
-    number_sections: true
-    toc_depth: 3
-    keep_tex: true
   html_document:
     toc: TRUE
     number_sections: true
     toc_depth: 3
     theme: cerulean
     highlight: tango
+  pdf_document:
+    toc: TRUE
+    highlight: default
+    number_sections: true
+    toc_depth: 3
+    keep_tex: true
+  word_document:
+    toc: TRUE
+    highlight: default
+    toc_depth: 3
 bibliography: bibliografia.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 options(OutDec=",")
+library(knitr)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r initialization, echo=FALSE}
+# Guardamos la dirección del directorio base del trabajo
+baseDirectory = getwd()
+knitr::opts_knit$set(root.dir = baseDirectory)
+csv_dir = paste(baseDirectory, "/", "titanic", sep="")
 ```
 
-## Including Plots
+# Práctica 2: Limpieza y validación de los datos
 
-You can also embed plots, for example:
+## Descripción de la Práctica a realizar
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+El objetivo de esta actividad será el tratamiento de un dataset, que puede ser el creado en la práctica 1 o bien cualquier dataset libre disponible en Kaggle (https://www.kaggle.com).
+Algunos ejemplos de dataset con los que podéis trabajar son:
+* Red Wine Quality (https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009)
+* Titanic: Machine Learning from Disaster (https://www.kaggle.com/c/titanic)
+* Predict Future Sales (https://www.kaggle.com/c/competitive-data-sciencepredict-future-sales/).
+  
+Los últimos dos ejemplos corresponden a competiciones activas de Kaggle de manera que, opcionalmente, podríais aprovechar el trabajo realizado durante la práctica para entrar en alguna de estas competiciones.  
+
+Siguiendo las principales etapas de un proyecto analítico, las diferentes tareas a realizar (y justificar) son las siguientes:  
+
+1. Descripción del dataset. ¿Por qué es importante y qué pregunta/problema pretende responder?
+2. Integración y selección de los datos de interés a analizar.
+3. Limpieza de los datos:  
+    3.1. ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?  
+    3.2. Identificación y tratamiento de valores extremos.
+4. Análisis de los datos.  
+    4.1. Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar).  
+    4.2. Comprobación de la normalidad y homogeneidad de la varianza.  
+    4.3. Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc.
+5. Representación de los resultados a partir de tablas y gráficas.
+6. Resolución del problema. A partir de los resultados obtenidos, ¿cuáles son las conclusiones? ¿Los resultados permiten responder al problema?
+7. Código: Hay que adjuntar el código, preferiblemente en R, con el que se ha realizado la limpieza, análisis y representación de los datos. Si lo preferís, también podéis trabajar en Python.  
+
+
+## Objetivos
+
+Los objetivos concretos de esta práctica son:  
+
+* Aprender a aplicar los conocimientos adquiridos y su capacidad de resolución de problemas en entornos nuevos o poco conocidos dentro de contextos más amplios o multidisciplinares.  
+* Saber identificar los datos relevantes y los tratamientos necesarios (integración, limpieza y validación) para llevar a cabo un proyecto analítico.  
+* Aprender a analizar los datos adecuadamente para abordar la información contenida en los datos.  
+* Identificar la mejor representación de los resultados para aportar conclusiones sobre el problema planteado en el proceso analítico.  
+* Actuar con los principios éticos y legales relacionados con la manipulación de datos en función del ámbito de aplicación.  
+* Desarrollar las habilidades de aprendizaje que les permitan continuar estudiando de un modo que tendrá que ser en gran medida autodirigido o autónomo.  
+* Desarrollar la capacidad de búsqueda, gestión y uso de información y recursos en el ámbito de la ciencia de datos.  
+
+## Competencias  
+
+En esta práctica se desarrollan las siguientes competencias del Máster de **Data Science**:  
+
+* Capacidad de analizar un problema en el nivel de abstracción adecuado a cada situación y aplicar las habilidades y conocimientos adquiridos para abordarlo y resolverlo.
+* Capacidad para aplicar las técnicas específicas de tratamiento de datos (integración, transformación, limpieza y validación) para su posterior análisis.  
+
+
+# Proceso de limpieza del dataset **titanic**
+
+## Descripción del dataset  
+
+El conjunto de datos de análisis escogido ha sido finalmente el Titanic de Kaggle [https://www.kaggle.com/c/titanic/data].
+
+El conjunto de datos se encuentra descrito en la tabla siguiente, contando con 891 filas o registros de datos para cada variable:  
+
+Variable | Definición | Clave
+-------- | ---------- | ------
+survived|Supervivencia|0 = No, 1 = Sí
+pclass|Clase de ticket|	1 = Primera, 2 = Segunda, 3 = Tercera
+name|nombre|
+sex|	Sexo|	
+Age|	Edad| en años	
+sibsp|	# hermanos / cónyuges a bordo del Titanic|	
+parch|	# padres / niños a bordo del Titanic|	
+ticket|	Numero de ticket	|
+fare|	Tarifa del pasajero	|
+cabin|	Número de cabina	|
+embarked|	Puerto de embarque|	C = Cherbourg, Q = Queenstown, S = Southampton
+  
+Adicionalmente, para comprender los elementos del dataset es preciso tomar en consideración las siguientes notas adicionales:
+
+**pclass**: Esta variable es indicadora indirecta del estado socioeconómico al que pertenecería cada pasajero:  
+
+* 1 = Clase alta  
+* 2 = Clase media  
+* 3 = Clase baja  
+
+**age**: La edad es fraccional si es menor que 1. Si la edad es estimada, ¿está en la forma de xx.5 
+
+**sibsp**: En el dataset se definen las relaciones familiares de esta manera:  
+
+* Hermano = hermano, hermana, hermanastro, hermanastra  
+* Cónyuge = esposo, esposa (las amantes y los novios fueron ignorados)  
+
+**parch**: En el dataset se definen las relaciones familiares de esta manera:  
+
+* Padre = madre, padre  
+* Hijo = hija, hijo, hijastra, hijastro  
+* Algunos niños viajaron solo con una niñera, por lo tanto parch = 0 para ellos.  
+  
+Este conjunto de datos puede responder a las causas de las muertes en el naufragio del Titanic, permitiendo establecer modelos de inferencia sobre las causas últimas relativas a la mortandad entre diversos tipos de pasajeros  
+
+También puede facilitar un modelo de interés sobre qué variables han influido en las muertes, causas circunstanciales que influyeron finalmente a pesar de las medidas de seguridad del barco y de la dotación.
+
+## Integración y selección de los datos de interés a analizar
+
+Antes de comenzar con la limpieza de los datos, procedemos a realizar la lectura del fichero
+en formato CSV en el que se encuentran. El resultado devuelto por la llamada a la función
+read.csv() será un objeto data.frame:
+
+```{r echo=FALSE}
+# cambio directorio para ver datos shp
+knitr::opts_knit$set(root.dir = csv_dir)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r read_dataset, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+titanic <- read.csv("train.csv", header = TRUE)
+kable(head(titanic), caption = "titanic.csv",digits = 3, padding = 2, align = 'r')
+```
+
+```{r echo=FALSE}
+# retornamos al directorio para trabajar con el shp
+knitr::opts_knit$set(root.dir = baseDirectory)
+```
+  
+El tipo de datos asignado automáticamente a cada campo es el siguiente:  
+
+```{r class, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+# Tipo de dato asignado a cada campo
+kable(sapply(titanic, function(x) class(x)), caption = "Tipo de dato asignado a cada campo",digits = 3, padding = 2, align = 'r')
+```
+
+En primer lugar debemos observar que hay una variable 'PassengerId' que es una variable de tipo Identificador, pero que no aporta nada al estudio. Por ello procedemos a eliminarla, directamente:  
+```{r getOut_PassengerId, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+titanic <- titanic[,-1]
+kable(head(titanic), caption = "Datset Titanic sin PassengerId",digits = 3, padding = 2, align = 'r')
+
+```
+
+En la tabla 'Tipo de dato asignado a cada campo' podemos ver que hay algunas asignaciones de clase que no son correctas. Procedemos a ajustarlas segun el conjunto de datos de cada variable.
+
+
+### Variables 'factor' que son realmente 'character'
+
+En este grupo tenemos a 3 variables: 'Name', 'Ticket' y 'Cabin'. Claramente no tiene utilidad su gestión como varibles tipo 'factor'.
+
+```{r factor_to_character}
+titanic$Name <- as.character(titanic$Name)
+class(titanic$Name)
+titanic$Ticket <- as.character(titanic$Ticket)
+class(titanic$Ticket)
+titanic$Cabin <- as.character(titanic$Cabin)
+class(titanic$Cabin)
+
+```
+
+```{r factor_to_character_table, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+kable(sapply(titanic, function(x) class(x)), caption = "Tipo de dato asignado finalmente a las variables seleccionadas",digits = 3, padding = 2, align = 'l')
+```
+
+## Limpieza de los datos
+
+## Ajuste de los datos con ceros o valores nulos
+
+
+
+```{r}
+summary(titanic)
+
+```
+
