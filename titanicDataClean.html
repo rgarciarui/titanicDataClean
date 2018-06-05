@@ -146,7 +146,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Titanic Data Clean</h1>
 <h4 class="author"><em>Ricardo Garcia Ruiz</em></h4>
-<h4 class="date"><em>12 de mayo, 2018</em></h4>
+<h4 class="date"><em>5 de junio, 2018</em></h4>
 
 </div>
 
@@ -160,11 +160,12 @@ $(document).ready(function () {
 <li><a href="#proceso-de-limpieza-del-dataset-titanic"><span class="toc-section-number">2</span> Proceso de limpieza del dataset <strong>titanic</strong></a><ul>
 <li><a href="#descripcion-del-dataset"><span class="toc-section-number">2.1</span> Descripción del dataset</a></li>
 <li><a href="#integracion-y-seleccion-de-los-datos-de-interes-a-analizar"><span class="toc-section-number">2.2</span> Integración y selección de los datos de interés a analizar</a><ul>
-<li><a href="#variables-numeric-que-son-integer"><span class="toc-section-number">2.2.1</span> Variables ‘numeric’ que son ‘integer’</a></li>
+<li><a href="#variables-integer-que-son-de-tipo-factor"><span class="toc-section-number">2.2.1</span> Variables ‘integer’ que son de tipo ‘factor’</a></li>
 <li><a href="#variables-factor-que-son-realmente-character"><span class="toc-section-number">2.2.2</span> Variables ‘factor’ que son realmente ‘character’</a></li>
 </ul></li>
-<li><a href="#limpieza-de-los-datos"><span class="toc-section-number">2.3</span> Limpieza de los datos</a></li>
-<li><a href="#ajuste-de-los-datos-con-ceros-o-valores-nulos"><span class="toc-section-number">2.4</span> Ajuste de los datos con ceros o valores nulos</a></li>
+<li><a href="#limpieza-de-los-datos"><span class="toc-section-number">2.3</span> Limpieza de los datos</a><ul>
+<li><a href="#ajuste-de-los-datos-con-ceros-o-valores-nulos"><span class="toc-section-number">2.3.1</span> Ajuste de los datos con ceros o valores nulos</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </div>
@@ -322,7 +323,7 @@ $(document).ready(function () {
 <h2><span class="header-section-number">2.2</span> Integración y selección de los datos de interés a analizar</h2>
 <p>Antes de comenzar con la limpieza de los datos, procedemos a realizar la lectura del fichero en formato CSV en el que se encuentran. El resultado devuelto por la llamada a la función read.csv() será un objeto data.frame:</p>
 <table>
-<caption>titanic.csv</caption>
+<caption>train.csv</caption>
 <thead>
 <tr class="header">
 <th align="right">PassengerId</th>
@@ -426,9 +427,107 @@ $(document).ready(function () {
 </tr>
 </tbody>
 </table>
+<table>
+<caption>test.csv</caption>
+<thead>
+<tr class="header">
+<th align="right">PassengerId</th>
+<th align="right">Pclass</th>
+<th align="right">Name</th>
+<th align="right">Sex</th>
+<th align="right">Age</th>
+<th align="right">SibSp</th>
+<th align="right">Parch</th>
+<th align="right">Ticket</th>
+<th align="right">Fare</th>
+<th align="right">Cabin</th>
+<th align="right">Embarked</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">892</td>
+<td align="right">3</td>
+<td align="right">Kelly, Mr. James</td>
+<td align="right">male</td>
+<td align="right">34,5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">330911</td>
+<td align="right">7,829</td>
+<td align="right"></td>
+<td align="right">Q</td>
+</tr>
+<tr class="even">
+<td align="right">893</td>
+<td align="right">3</td>
+<td align="right">Wilkes, Mrs. James (Ellen Needs)</td>
+<td align="right">female</td>
+<td align="right">47,0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">363272</td>
+<td align="right">7,000</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+<tr class="odd">
+<td align="right">894</td>
+<td align="right">2</td>
+<td align="right">Myles, Mr. Thomas Francis</td>
+<td align="right">male</td>
+<td align="right">62,0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">240276</td>
+<td align="right">9,688</td>
+<td align="right"></td>
+<td align="right">Q</td>
+</tr>
+<tr class="even">
+<td align="right">895</td>
+<td align="right">3</td>
+<td align="right">Wirz, Mr. Albert</td>
+<td align="right">male</td>
+<td align="right">27,0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">315154</td>
+<td align="right">8,662</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+<tr class="odd">
+<td align="right">896</td>
+<td align="right">3</td>
+<td align="right">Hirvonen, Mrs. Alexander (Helga E Lindqvist)</td>
+<td align="right">female</td>
+<td align="right">22,0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3101298</td>
+<td align="right">12,287</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+<tr class="even">
+<td align="right">897</td>
+<td align="right">3</td>
+<td align="right">Svensson, Mr. Johan Cervin</td>
+<td align="right">male</td>
+<td align="right">14,0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">7538</td>
+<td align="right">9,225</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+</tbody>
+</table>
 <p>El tipo de datos asignado automáticamente a cada campo es el siguiente:</p>
 <table>
-<caption>Tipo de dato asignado a cada campo</caption>
+<caption>Tipo de dato asignado a cada campo: train data</caption>
 <thead>
 <tr class="header">
 <th></th>
@@ -486,9 +585,64 @@ $(document).ready(function () {
 </tr>
 </tbody>
 </table>
-<p>En primer lugar debemos observar que hay una variable ‘PassengerId’ que es una variable de tipo Identificador, pero que no aporta nada al estudio. Por ello procedemos a eliminarla, directamente:</p>
 <table>
-<caption>Datset Titanic sin PassengerId</caption>
+<caption>Tipo de dato asignado a cada campo: test data</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PassengerId</td>
+<td align="right">integer</td>
+</tr>
+<tr class="even">
+<td>Pclass</td>
+<td align="right">integer</td>
+</tr>
+<tr class="odd">
+<td>Name</td>
+<td align="right">factor</td>
+</tr>
+<tr class="even">
+<td>Sex</td>
+<td align="right">factor</td>
+</tr>
+<tr class="odd">
+<td>Age</td>
+<td align="right">numeric</td>
+</tr>
+<tr class="even">
+<td>SibSp</td>
+<td align="right">integer</td>
+</tr>
+<tr class="odd">
+<td>Parch</td>
+<td align="right">integer</td>
+</tr>
+<tr class="even">
+<td>Ticket</td>
+<td align="right">factor</td>
+</tr>
+<tr class="odd">
+<td>Fare</td>
+<td align="right">numeric</td>
+</tr>
+<tr class="even">
+<td>Cabin</td>
+<td align="right">factor</td>
+</tr>
+<tr class="odd">
+<td>Embarked</td>
+<td align="right">factor</td>
+</tr>
+</tbody>
+</table>
+<p>En primer lugar debemos observar que hay una variable ‘PassengerId’ que es una variable de tipo Identificador, pero que no aporta nada al estudio desde el conjunto de datos de entrenamiento. Por ello procedemos a eliminarla, directamente:</p>
+<table>
+<caption>Dataset Titanic sin PassengerId: train data</caption>
 <thead>
 <tr class="header">
 <th align="right">Survived</th>
@@ -585,25 +739,130 @@ $(document).ready(function () {
 </tr>
 </tbody>
 </table>
+<table>
+<caption>Dataset Titanic sin PassengerId: test data</caption>
+<thead>
+<tr class="header">
+<th align="right">PassengerId</th>
+<th align="right">Pclass</th>
+<th align="right">Name</th>
+<th align="right">Sex</th>
+<th align="right">Age</th>
+<th align="right">SibSp</th>
+<th align="right">Parch</th>
+<th align="right">Ticket</th>
+<th align="right">Fare</th>
+<th align="right">Cabin</th>
+<th align="right">Embarked</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">892</td>
+<td align="right">3</td>
+<td align="right">Kelly, Mr. James</td>
+<td align="right">male</td>
+<td align="right">34,5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">330911</td>
+<td align="right">7,829</td>
+<td align="right"></td>
+<td align="right">Q</td>
+</tr>
+<tr class="even">
+<td align="right">893</td>
+<td align="right">3</td>
+<td align="right">Wilkes, Mrs. James (Ellen Needs)</td>
+<td align="right">female</td>
+<td align="right">47,0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">363272</td>
+<td align="right">7,000</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+<tr class="odd">
+<td align="right">894</td>
+<td align="right">2</td>
+<td align="right">Myles, Mr. Thomas Francis</td>
+<td align="right">male</td>
+<td align="right">62,0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">240276</td>
+<td align="right">9,688</td>
+<td align="right"></td>
+<td align="right">Q</td>
+</tr>
+<tr class="even">
+<td align="right">895</td>
+<td align="right">3</td>
+<td align="right">Wirz, Mr. Albert</td>
+<td align="right">male</td>
+<td align="right">27,0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">315154</td>
+<td align="right">8,662</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+<tr class="odd">
+<td align="right">896</td>
+<td align="right">3</td>
+<td align="right">Hirvonen, Mrs. Alexander (Helga E Lindqvist)</td>
+<td align="right">female</td>
+<td align="right">22,0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3101298</td>
+<td align="right">12,287</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+<tr class="even">
+<td align="right">897</td>
+<td align="right">3</td>
+<td align="right">Svensson, Mr. Johan Cervin</td>
+<td align="right">male</td>
+<td align="right">14,0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">7538</td>
+<td align="right">9,225</td>
+<td align="right"></td>
+<td align="right">S</td>
+</tr>
+</tbody>
+</table>
 <p>En la tabla ‘Tipo de dato asignado a cada campo’ podemos ver que hay algunas asignaciones de clase que no son correctas. Procedemos a ajustarlas segun el conjunto de datos de cada variable.</p>
-<div id="variables-numeric-que-son-integer" class="section level3">
-<h3><span class="header-section-number">2.2.1</span> Variables ‘numeric’ que son ‘integer’</h3>
-<p>En este grupo tenemos a la variable ‘Age’ que claramente ha sido considerada como una variable ‘numeric’ pero es una variable entera.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">titanic<span class="op">$</span>Age &lt;-<span class="st"> </span><span class="kw">as.integer</span>(titanic<span class="op">$</span>Age)
-<span class="kw">class</span>(titanic<span class="op">$</span>Age)</code></pre></div>
-<pre><code>## [1] &quot;integer&quot;</code></pre>
+<p>Podemos observar que el conjunto de trenes se compone de 891 observaciones con 11 características. Podemos ver primero que algunas características necesitan ser transformado en factores, tales como <strong>Survived</strong> o <strong>Pclass</strong>, por ejemplo, para los que ya KNO que son representantes de los niveles. En la siguiente parte del estudio, vamos a ver cada característica incluida en este conjunto de datos, para mejorar algunas características interesantes, y así obtener un conjunto de entrenamiento final limpiado y mejorado para ser equipado con un modelo.<br />
+Veremos qué modificación vale la pena conservar en el análisis y, por lo tanto, la aplicaremos al conjunto de trenes destinados a ser equipados con un modelo de regresión.</p>
+<div id="variables-integer-que-son-de-tipo-factor" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> Variables ‘integer’ que son de tipo ‘factor’</h3>
+<p>Tenemos basicamente 2 variables, ‘Survived’ y ‘Pclass’ que realmente son de tipo factor, ya que los números indican categorias.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ajuste en dataset train</span>
+titanic_train<span class="op">$</span>Survived &lt;-<span class="st"> </span><span class="kw">as.factor</span>(titanic_train<span class="op">$</span>Survived)
+<span class="kw">class</span>(titanic_train<span class="op">$</span>Survived)</code></pre></div>
+<pre><code>## [1] &quot;factor&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">titanic_train<span class="op">$</span>Pclass &lt;-<span class="st"> </span><span class="kw">as.factor</span>(titanic_train<span class="op">$</span>Pclass)
+<span class="kw">class</span>(titanic_train<span class="op">$</span>Pclass)</code></pre></div>
+<pre><code>## [1] &quot;factor&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ajuste en dataset test</span>
+titanic_test<span class="op">$</span>Pclass &lt;-<span class="st"> </span><span class="kw">as.factor</span>(titanic_test<span class="op">$</span>Pclass)
+<span class="kw">class</span>(titanic_test<span class="op">$</span>Pclass)</code></pre></div>
+<pre><code>## [1] &quot;factor&quot;</code></pre>
 </div>
 <div id="variables-factor-que-son-realmente-character" class="section level3">
 <h3><span class="header-section-number">2.2.2</span> Variables ‘factor’ que son realmente ‘character’</h3>
-<p>En este grupo tenemos a 3 variables: ‘Name’, ‘Ticket’ y ‘Cabin’. Claramente no tiene utilidad su gestión como varibles tipo ‘factor’.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">titanic<span class="op">$</span>Name &lt;-<span class="st"> </span><span class="kw">as.character</span>(titanic<span class="op">$</span>Name)
-<span class="kw">class</span>(titanic<span class="op">$</span>Name)</code></pre></div>
+<p>En este grupo tenemos a 2 variables: ‘Name’ y ‘Ticket’. Claramente no tiene utilidad su gestión como variables tipo ‘factor’.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">titanic_train<span class="op">$</span>Name &lt;-<span class="st"> </span><span class="kw">as.character</span>(titanic_train<span class="op">$</span>Name)
+<span class="kw">class</span>(titanic_train<span class="op">$</span>Name)</code></pre></div>
 <pre><code>## [1] &quot;character&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">titanic<span class="op">$</span>Ticket &lt;-<span class="st"> </span><span class="kw">as.character</span>(titanic<span class="op">$</span>Ticket)
-<span class="kw">class</span>(titanic<span class="op">$</span>Ticket)</code></pre></div>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">titanic<span class="op">$</span>Cabin &lt;-<span class="st"> </span><span class="kw">as.character</span>(titanic<span class="op">$</span>Cabin)
-<span class="kw">class</span>(titanic<span class="op">$</span>Cabin)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">titanic_train<span class="op">$</span>Ticket &lt;-<span class="st"> </span><span class="kw">as.character</span>(titanic_train<span class="op">$</span>Ticket)
+<span class="kw">class</span>(titanic_train<span class="op">$</span>Ticket)</code></pre></div>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <table>
 <caption>Tipo de dato asignado finalmente a las variables seleccionadas</caption>
@@ -616,11 +875,11 @@ $(document).ready(function () {
 <tbody>
 <tr class="odd">
 <td>Survived</td>
-<td align="left">integer</td>
+<td align="left">factor</td>
 </tr>
 <tr class="even">
 <td>Pclass</td>
-<td align="left">integer</td>
+<td align="left">factor</td>
 </tr>
 <tr class="odd">
 <td>Name</td>
@@ -632,7 +891,7 @@ $(document).ready(function () {
 </tr>
 <tr class="odd">
 <td>Age</td>
-<td align="left">integer</td>
+<td align="left">numeric</td>
 </tr>
 <tr class="even">
 <td>SibSp</td>
@@ -652,7 +911,7 @@ $(document).ready(function () {
 </tr>
 <tr class="even">
 <td>Cabin</td>
-<td align="left">character</td>
+<td align="left">factor</td>
 </tr>
 <tr class="odd">
 <td>Embarked</td>
@@ -664,34 +923,36 @@ $(document).ready(function () {
 </div>
 <div id="limpieza-de-los-datos" class="section level2">
 <h2><span class="header-section-number">2.3</span> Limpieza de los datos</h2>
+<div id="ajuste-de-los-datos-con-ceros-o-valores-nulos" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Ajuste de los datos con ceros o valores nulos</h3>
+<p>La variable ‘Age’ tiene 177 valores faltantes ‘NA’ segun podemos observa en el listado siguiente:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(titanic_train)</code></pre></div>
+<pre><code>##  Survived Pclass      Name               Sex           Age       
+##  0:549    1:216   Length:891         female:314   Min.   : 0,42  
+##  1:342    2:184   Class :character   male  :577   1st Qu.:20,12  
+##           3:491   Mode  :character                Median :28,00  
+##                                                   Mean   :29,70  
+##                                                   3rd Qu.:38,00  
+##                                                   Max.   :80,00  
+##                                                   NA's   :177    
+##      SibSp           Parch           Ticket               Fare       
+##  Min.   :0,000   Min.   :0,0000   Length:891         Min.   :  0,00  
+##  1st Qu.:0,000   1st Qu.:0,0000   Class :character   1st Qu.:  7,91  
+##  Median :0,000   Median :0,0000   Mode  :character   Median : 14,45  
+##  Mean   :0,523   Mean   :0,3816                      Mean   : 32,20  
+##  3rd Qu.:1,000   3rd Qu.:0,0000                      3rd Qu.: 31,00  
+##  Max.   :8,000   Max.   :6,0000                      Max.   :512,33  
+##                                                                      
+##          Cabin     Embarked
+##             :687    :  2   
+##  B96 B98    :  4   C:168   
+##  C23 C25 C27:  4   Q: 77   
+##  G6         :  4   S:644   
+##  C22 C26    :  3           
+##  D          :  3           
+##  (Other)    :186</code></pre>
+<p>En este punto podemos tomar 2 vías, o bien eliminar los datos con valores faltantes o bien intentar aplicar valores medios ajustados segun los demás valores existentes en la tabla.</p>
 </div>
-<div id="ajuste-de-los-datos-con-ceros-o-valores-nulos" class="section level2">
-<h2><span class="header-section-number">2.4</span> Ajuste de los datos con ceros o valores nulos</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(titanic)</code></pre></div>
-<pre><code>##     Survived          Pclass          Name               Sex     
-##  Min.   :0,0000   Min.   :1,000   Length:891         female:314  
-##  1st Qu.:0,0000   1st Qu.:2,000   Class :character   male  :577  
-##  Median :0,0000   Median :3,000   Mode  :character               
-##  Mean   :0,3838   Mean   :2,309                                  
-##  3rd Qu.:1,0000   3rd Qu.:3,000                                  
-##  Max.   :1,0000   Max.   :3,000                                  
-##                                                                  
-##       Age            SibSp           Parch           Ticket         
-##  Min.   : 0,00   Min.   :0,000   Min.   :0,0000   Length:891        
-##  1st Qu.:20,00   1st Qu.:0,000   1st Qu.:0,0000   Class :character  
-##  Median :28,00   Median :0,000   Median :0,0000   Mode  :character  
-##  Mean   :29,68   Mean   :0,523   Mean   :0,3816                     
-##  3rd Qu.:38,00   3rd Qu.:1,000   3rd Qu.:0,0000                     
-##  Max.   :80,00   Max.   :8,000   Max.   :6,0000                     
-##  NA's   :177                                                        
-##       Fare           Cabin           Embarked
-##  Min.   :  0,00   Length:891          :  2   
-##  1st Qu.:  7,91   Class :character   C:168   
-##  Median : 14,45   Mode  :character   Q: 77   
-##  Mean   : 32,20                      S:644   
-##  3rd Qu.: 31,00                              
-##  Max.   :512,33                              
-## </code></pre>
 </div>
 </div>
 

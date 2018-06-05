@@ -1,30 +1,74 @@
-
+library(mice)
+library(randomForest)
 
 options(OutDec=",")
 # Guardamos la dirección del directorio base del trabajo
 baseDirectory = getwd()
-csv_dir = paste(baseDirectory, "/", "titanic", sep="")
+csv_dir = paste(baseDirectory, "/", "titanic_train", sep="")
 
 # cambio directorio para ver datos shp
 setwd(csv_dir)
 
-titanic <- read.csv("train.csv", header = TRUE)
-head(titanic[,1:5])
+titanic_train <- read.csv("train.csv", header = TRUE)
+head(titanic_train[,1:5])
 
 # retornamos al directorio para trabajar con el shp
 setwd(baseDirectory)
 
-sapply(titanic, function(x) class(x))
+sapply(titanic_train, function(x) class(x))
 
-titanic <- titanic[,-1]
+titanic_train <- titanic_train[,-1]
 
-titanic$Age <- as.integer(titanic$Age)
+#titanic_train$Age <- as.integer(titanic_train$Age)
 
-titanic$Name <- as.character(titanic$Name)
-class(titanic$Name)
-titanic$Ticket <- as.character(titanic$Ticket)
-class(titanic$Ticket)
-titanic$Cabin <- as.character(titanic$Cabin)
-class(titanic$Cabin)
+#titanic_train <- titanic_train[,-10]
 
-sapply(titanic, function(x) class(x))
+titanic_train$Survived <- as.factor(titanic_train$Survived)
+class(titanic_train$Survived)
+titanic_train$Pclass <- as.factor(titanic_train$Pclass)
+class(titanic_train$Pclass)
+
+summary(titanic_train$Pclass)
+plot(c(titanic_train$Pclass,titanic_train$Survived))
+
+library(VIM)
+aggr_plot <- aggr(titanic_train, col=c('navyblue','red'), 
+                  numbers=TRUE, 
+                  sortVars=TRUE, 
+                  labels=names(titanic_train), 
+                  cex.axis=.7, gap=3, 
+                  ylab=c("Histograma datos ausentes","Patrón"))
+
+marginplot(titanic_train[c(1,5)])
+
+titanic_train$Name <- as.character(titanic_train$Name)
+class(titanic_train$Name)
+titanic_train$Ticket <- as.character(titanic_train$Ticket)
+class(titanic_train$Ticket)
+
+sapply(titanic_train, function(x) class(x))
+
+tempDataSet = titanic_train[!is.na(titanic_train$Age),]
+
+# media de hombre
+globalMeanMen = mean(tempDataSet$Age[tempDataSet$Sex == "male"])
+# media de mujeres
+globalMeanWomen = mean(tempDataSet$Age[tempDataSet$Sex == "female"])
+
+md.pattern(titanic_train)
+
+#Imputing the missing age values with the MICE package
+impute <- mice(titanic_train[, !names(titanic_train) %in% 
+                       c('Name','Ticket','Cabin','Survived', 
+                         'Assigned','FL','FT','ticketlength','one','two','three',
+                         'four','five','six','seven')], method='pmm')
+
+trained_mouse <- complete(impute)
+
+# media de hombre
+globalMeanMen_2 = mean(trained_mouse$Age[trained_mouse$Sex == "male"])
+# media de mujeres
+globalMeanWomen_2 = mean(trained_mouse$Age[trained_mouse$Sex == "female"])
+
+
+

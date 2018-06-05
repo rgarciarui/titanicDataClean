@@ -142,8 +142,11 @@ knitr::opts_knit$set(root.dir = csv_dir)
 ```
 
 ```{r read_dataset, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
-titanic <- read.csv("train.csv", header = TRUE)
-kable(head(titanic), caption = "titanic.csv",digits = 3, padding = 2, align = 'r')
+titanic_train <- read.csv("train.csv", header = TRUE)
+titanic_test <- read.csv("test.csv", header = TRUE)
+
+kable(head(titanic_train), caption = "train.csv",digits = 3, padding = 2, align = 'r')
+kable(head(titanic_test), caption = "test.csv",digits = 3, padding = 2, align = 'r')
 ```
 
 ```{r echo=FALSE}
@@ -155,45 +158,77 @@ El tipo de datos asignado automáticamente a cada campo es el siguiente:
 
 ```{r class, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
 # Tipo de dato asignado a cada campo
-kable(sapply(titanic, function(x) class(x)), caption = "Tipo de dato asignado a cada campo",digits = 3, padding = 2, align = 'r')
+kable(sapply(titanic_train, function(x) class(x)), caption = "Tipo de dato asignado a cada campo: train data",digits = 3, padding = 2, align = 'r')
+
+# Tipo de dato asignado a cada campo
+kable(sapply(titanic_test, function(x) class(x)), caption = "Tipo de dato asignado a cada campo: test data",digits = 3, padding = 2, align = 'r')
 ```
 
-En primer lugar debemos observar que hay una variable 'PassengerId' que es una variable de tipo Identificador, pero que no aporta nada al estudio. Por ello procedemos a eliminarla, directamente:  
+En primer lugar debemos observar que hay una variable 'PassengerId' que es una variable de tipo Identificador, pero que no aporta nada al estudio desde el conjunto de datos de entrenamiento. Por ello procedemos a eliminarla, directamente:  
+
 ```{r getOut_PassengerId, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
-titanic <- titanic[,-1]
-kable(head(titanic), caption = "Datset Titanic sin PassengerId",digits = 3, padding = 2, align = 'r')
+titanic_train <- titanic_train[,-1]
+
+kable(head(titanic_train), caption = "Dataset Titanic sin PassengerId: train data",digits = 3, padding = 2, align = 'r')
+
+kable(head(titanic_test), caption = "Dataset Titanic sin PassengerId: test data",digits = 3, padding = 2, align = 'r')
 
 ```
 
 En la tabla 'Tipo de dato asignado a cada campo' podemos ver que hay algunas asignaciones de clase que no son correctas. Procedemos a ajustarlas segun el conjunto de datos de cada variable.
 
+Podemos observar que el conjunto de trenes se compone de 891 observaciones con 11 características. Podemos ver primero que algunas características necesitan ser transformado en factores, tales como **Survived** o **Pclass**, por ejemplo, para los que ya KNO que son representantes de los niveles. 
+En la siguiente parte del estudio, vamos a ver cada característica incluida en este conjunto de datos, para mejorar algunas características interesantes, y así obtener un conjunto de entrenamiento final limpiado y mejorado para ser equipado con un modelo.  
+Veremos qué modificación vale la pena conservar en el análisis y, por lo tanto, la aplicaremos al conjunto de trenes destinados a ser equipados con un modelo de regresión. 
+
+### Variables 'integer' que son de tipo 'factor'
+
+Tenemos basicamente 2 variables, 'Survived' y 'Pclass' que realmente son de tipo factor, ya que los números indican categorias.  
+
+```{r integer_to_factor}
+
+# ajuste en dataset train
+titanic_train$Survived <- as.factor(titanic_train$Survived)
+class(titanic_train$Survived)
+titanic_train$Pclass <- as.factor(titanic_train$Pclass)
+class(titanic_train$Pclass)
+
+# ajuste en dataset test
+titanic_test$Pclass <- as.factor(titanic_test$Pclass)
+class(titanic_test$Pclass)
+
+```
+
 
 ### Variables 'factor' que son realmente 'character'
 
-En este grupo tenemos a 3 variables: 'Name', 'Ticket' y 'Cabin'. Claramente no tiene utilidad su gestión como varibles tipo 'factor'.
+En este grupo tenemos a 2 variables: 'Name' y 'Ticket'. Claramente no tiene utilidad su gestión como variables tipo 'factor'.
 
 ```{r factor_to_character}
-titanic$Name <- as.character(titanic$Name)
-class(titanic$Name)
-titanic$Ticket <- as.character(titanic$Ticket)
-class(titanic$Ticket)
-titanic$Cabin <- as.character(titanic$Cabin)
-class(titanic$Cabin)
+titanic_train$Name <- as.character(titanic_train$Name)
+class(titanic_train$Name)
+titanic_train$Ticket <- as.character(titanic_train$Ticket)
+class(titanic_train$Ticket)
 
 ```
 
 ```{r factor_to_character_table, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
-kable(sapply(titanic, function(x) class(x)), caption = "Tipo de dato asignado finalmente a las variables seleccionadas",digits = 3, padding = 2, align = 'l')
+kable(sapply(titanic_train, function(x) class(x)), caption = "Tipo de dato asignado finalmente a las variables seleccionadas",digits = 3, padding = 2, align = 'l')
 ```
 
 ## Limpieza de los datos
 
-## Ajuste de los datos con ceros o valores nulos
+### Ajuste de los datos con ceros o valores nulos
 
-
+La variable 'Age' tiene 177 valores faltantes 'NA' segun podemos observa en el listado siguiente:
 
 ```{r}
-summary(titanic)
+summary(titanic_train)
 
 ```
+
+En este punto podemos tomar 2 vías, o bien eliminar los datos con valores faltantes o bien intentar aplicar valores medios ajustados segun los demás valores existentes en la tabla.
+
+
+
 
