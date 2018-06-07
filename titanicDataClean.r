@@ -4,7 +4,7 @@ library(randomForest)
 options(OutDec=",")
 # Guardamos la dirección del directorio base del trabajo
 baseDirectory = getwd()
-csv_dir = paste(baseDirectory, "/", "titanic_train", sep="")
+csv_dir = paste(baseDirectory, "/", "titanic", sep="")
 
 # cambio directorio para ver datos shp
 setwd(csv_dir)
@@ -69,6 +69,27 @@ trained_mouse <- complete(impute)
 globalMeanMen_2 = mean(trained_mouse$Age[trained_mouse$Sex == "male"])
 # media de mujeres
 globalMeanWomen_2 = mean(trained_mouse$Age[trained_mouse$Sex == "female"])
+
+
+
+purl("titanicDataClean.rmd", output = "titanicDataClean2.r", documentation = 1)
+
+
+# cambio directorio para ver datos shp
+setwd(csv_dir)
+
+## ----read_dataset, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE----
+titanic_train <- read.csv("train.csv", header = TRUE)
+titanic_test <- read.csv("test.csv", header = TRUE)
+titanic_test.label <- read.csv("gender_submission.csv", header = TRUE)
+titanic_test <- merge(titanic_test, titanic_test.label, by="PassengerId")
+titanic_test = titanic_test[,c(1,12,2:11)]
+
+titanic_train <- as.data.table(titanic_train)
+titanic_test <- as.data.table(titanic_test)
+
+# retornamos al directorio para trabajar con el shp
+setwd(baseDirectory)
 
 
 

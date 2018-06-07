@@ -28,6 +28,16 @@ options(OutDec=",")
 library(knitr)
 ```
 
+```{r set_library_to_plot, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(mice)
+library(stringi)
+```
+
 ```{r initialization, echo=FALSE}
 # Guardamos la dirección del directorio base del trabajo
 baseDirectory = getwd()
@@ -52,7 +62,7 @@ Siguiendo las principales etapas de un proyecto analítico, las diferentes tarea
 1. Descripción del dataset. ¿Por qué es importante y qué pregunta/problema pretende responder?
 2. Integración y selección de los datos de interés a analizar.
 3. Limpieza de los datos:  
-    3.1. ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?  
+    3.1. ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?
     3.2. Identificación y tratamiento de valores extremos.
 4. Análisis de los datos.  
     4.1. Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar).  
@@ -144,6 +154,12 @@ knitr::opts_knit$set(root.dir = csv_dir)
 ```{r read_dataset, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
 titanic_train <- read.csv("train.csv", header = TRUE)
 titanic_test <- read.csv("test.csv", header = TRUE)
+titanic_test.label <- read.csv("gender_submission.csv", header = TRUE)
+titanic_test <- merge(titanic_test, titanic_test.label, by="PassengerId")
+titanic_test = titanic_test[,c(1,12,2:11)]
+
+titanic_train <- as.data.table(titanic_train)
+titanic_test <- as.data.table(titanic_test)
 
 kable(head(titanic_train), caption = "train.csv",digits = 3, padding = 2, align = 'r')
 kable(head(titanic_test), caption = "test.csv",digits = 3, padding = 2, align = 'r')
@@ -216,18 +232,652 @@ class(titanic_train$Ticket)
 kable(sapply(titanic_train, function(x) class(x)), caption = "Tipo de dato asignado finalmente a las variables seleccionadas",digits = 3, padding = 2, align = 'l')
 ```
 
-## Limpieza de los datos
+## Análisis de las variables y limpieza de los datos
 
-### Ajuste de los datos con ceros o valores nulos
+En este punto vamos a ir realizando un análisis detenido de cada una de las variables y tomando decisiones en función del resultado de la evaluación de cada variable.
 
-La variable 'Age' tiene 177 valores faltantes 'NA' segun podemos observa en el listado siguiente:
+### Class 
 
-```{r}
-summary(titanic_train)
+La variable Class tiene 3 niveles distintos. El grupo más grande está en la clase 3 con una división cercana entre las clases 1 y 2, un poco más en la clase 1.
+
+```{r set_library_plot}
+
+titanic_train$Pclass <- as.factor(titanic_train$Pclass)
+summary(titanic_train$Pclass)
 
 ```
 
-En este punto podemos tomar 2 vías, o bien eliminar los datos con valores faltantes o bien intentar aplicar valores medios ajustados segun los demás valores existentes en la tabla.
+La mayoría de la gente está en 3ra clase (entrenador), y aunque puede ser barato, no le va bien. Solo de este gráfico, parece que los pasajeros de tercera clase tienen casi 3 veces más probabilidades de no hacerlo.
+
+```{r set_library_plot2, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+ch <- ggplot(titanic_train, aes(x=Pclass)) + 
+  geom_bar(fill=c(colors()[78], colors()[16], 
+                  colors()[55]), col=c(colors()[79], colors()[17], colors()[56]), lwd = 2) + 
+  labs(x="Class")
+
+ch
+
+ggplot(titanic_train, aes(x = Pclass, fill = factor(Survived))) +
+  geom_bar(stat='count', position='dodge') 
+```
+
+
+### Name
+
+La longitud promedio de un nombre es de 27 caracteres con un máximo de 82.
+
+```{r var_name}
+# Resumen de las longitudes del nombre
+summary(sapply(as.character(unique(titanic_train$Name)),nchar))
+```
+
+
+### Sex
+
+Casi el doble de hombres:  
+
+```{r var_sex}
+#Casi el doble de hombres
+summary(titanic_train$Sex)
+sb <- ggplot(titanic_train, aes(x=Sex)) + 
+  geom_bar(fill=c(colors()[542], colors()[121]), 
+           col=c(colors()[543], colors()[123]), lwd = 2) + 
+  labs(x="Class")
+sb
+```
+
+
+### Age
+
+Promedio de edad alrededor de los 30 años con 177 NA. Existe una necesidad de encontrar una forma de imputar estos valores.
+
+```{r var_age}
+# # 177 NA's, la edad media es 28 años aka nacido en 1884 (inicio de la entrada)
+summary(titanic_train$Age)
+
+ap <- ggplot(titanic_train, aes(x=Age))+geom_density(adjust=.5)
+ap
+
+```
+
+
+### Hermanos y cónyuges  
+
+La mayoría de las personas viajan solas. La mediana es 0, y solo aproximadamente 1/4 de las personas están con hermanos o cónyuges.
+
+```{r var_spouses}
+unique(titanic_train$SibSp)
+# Max Spouse es 1, crea datos de hermanos
+# Max parents is 2, create children data
+# Recopilar datos de riqueza de los puntos de embarque
+titanic_train$SibSp <- as.integer(titanic_train$SibSp) #posiblemente solo frente a variable familiar
+summary(titanic_train$SibSp) #mediana es 0
+
+dim(titanic_train[titanic_train$SibSp > 0,])
+dim(titanic_train[titanic_train$SibSp == 0,])
+
+ggplot(titanic_train, aes(x = SibSp, fill = factor(Survived))) +
+  geom_bar(stat='count', position='dodge') +
+  scale_x_continuous(breaks=c(1:7)) +
+  labs(x = 'SibSp')
+```
+
+Estas tablas sugieren que la única configuración beneficiosa es tener 1 hermano o cónyuge. Ellos son el único grupo que tiene más probabilidades de sobrevivir. Esto podría ser indicativo de madres solteras, o tal vez de parejas, aunque Jack y Rose son un contador formidable de esa proposición.  
+
+```{r echo=FALSE}
+ggplot(titanic_train, aes(x = SibSp, fill = factor(Survived))) +
+  geom_bar(stat='count', position='dodge') +
+  scale_x_continuous(breaks=c(1:7)) +
+  labs(x = 'SibSp')+ ylim(0,115)
+```
+
+
+### Padres e hijos
+
+Esto también sugiere que la mayoría de la gente no tiene familia. Aproximadamente 1/4 tienen padres o niños a bordo. 
+
+```{r var_parch}
+unique(titanic_train$Parch) 
+summary(titanic_train$Parch) 
+```
+
+Hay 213 personas que viajan con sus hijos o padres.  
+```{r var_parch_2}
+dim(titanic_train[titanic_train$Parch > 0,]) 
+```
+
+Los otros 678 están solos.  
+```{r var_parch_3}
+dim(titanic_train[titanic_train$Parch == 0,])
+```
+
+Este primer cuadro muestra la abrumadora desventaja de viajar solo.  
+
+```{r echo=FALSE }
+ggplot(titanic_train, aes(x = Parch, fill = factor(Survived))) +
+  geom_bar(stat='count', position='dodge') +
+  scale_x_continuous(breaks=c(1:7)) +
+  labs(x = 'Parch')
+```
+
+Este muestra que tener una relación 1-3 niños/padres es potencialmente beneficioso.  
+
+```{r echo=FALSE}
+ggplot(titanic_train, aes(x = Parch, fill = factor(Survived))) +
+  geom_bar(stat='count', position='dodge') +
+  scale_x_continuous(breaks=c(1:7)) +
+  labs(x = 'Parch')+ ylim(0,65)
+```
+
+
+### Ticket
+
+Hay 681 identificadores de tickets únicos. Los boletos tienen identificadores de prefijo y dígitos iniciales limitados que podrían codificar más información sobre el pasajero.
+
+```{r Ticket, echo = FALSE}
+length(unique(titanic_train$Ticket)) 
+
+```
+
+Este gráfico muestra que algunos de los prefijos de tickt están asociados con precios más altos. La tarifa ya debería dar cuenta de esta variación, por lo tanto, a menos que podamos encontrar otra relación con el prefijo, entonces no vale la pena incluir esta variable.  
+
+```{r tplot, echo = FALSE}
+titanic_train$FL <- stri_extract_first_regex(titanic_train$Ticket, "[A-Z]+") #Grabs first Text occurence
+titanic_train$FT <- stri_extract_first_regex(titanic_train$Ticket, "[0-9][0-9]+") #Grabs ticket number
+titanic_train[is.na(titanic_train$FL),]$FL <- "NA"
+```
+
+```{r plot, echo = FALSE}
+tpref <- titanic_train[!titanic_train$FL=="NA",]
+gg <- ggplot(aes(y = Fare, x = FL), data = tpref) + geom_boxplot() + labs(title="Ticket Prefix")
+gg
+```
+
+Esto confirma que el ticket codifica más información, pero para que sea útil tendrá que cavar más profundo. La gráfica a continuación muestra que aquellos con el prefijo de ticket para PC tienen muchas más probabilidades de sobrevivir. Este gráfico está confundido por el precio del boleto. Algunos de los prefijos son intrigantes. A, CA, SOTON y W tienen tasas de bajas extremadamente altas en relación con todas las demás.  
+
+```{r ticketplot, echo = FALSE}
+p2 <- ggplot(aes(x = FL, fill = factor(Survived)), data = tpref) + geom_bar(stat='count', position='dodge') + labs(title="Ticket Prefix")
+p2
+
+```
+
+
+Si profundizamos un poco más, ¿qué tienen en común estos prefijos? Si miramos la longitud de los componentes numéricos de los tickets, encontramos algo interesante: Los sufijos que mencionamos generalmente tienen números de ticket más cortos. El máximo es 2 menos, y la mediana es 2 menos. Esto es particularmente interesante porque hay entradas sin prefijos que también tienen entradas más cortas, así que tal vez tengamos algo bueno.  
+
+```{r dig}
+tfix <- tpref[tpref$FL %in% c("A", "CA", "Soton", "W"),]
+summary(sapply(as.character(titanic_train$FT),nchar))
+summary(sapply(as.character(tfix$FT), nchar))
+```
+
+Regresaremos sobre esto más tarde una vez que completemos esta decodificación.  
+
+```{r numlength}
+titanic_train$ticketlength <- sapply(as.character(titanic_train$FT),nchar)
+```
+
+```{r plot23, echo = FALSE}
+s1 <- ggplot(aes(x = factor(ticketlength), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count', position='dodge') + labs(title="Ticket Number Length")
+s1
+
+f1 <- ggplot(aes(x = factor(ticketlength), y=Fare, fill = factor(Survived)), data = titanic_train) + geom_boxplot() + labs(title="Ticket Number Length")
+f1
+```
+
+A riesgo de ir un paso demasiado lejos, veamos los números de los boletos individuales. La premisa es que no son aleatorios y potencialmente codifican datos de ubicación de pasajeros que podrían afectar el resultado de la supervivencia. El desglose de los precios se incluye junto para verificar el efecto de confusión.
+
+Desde mi punto de vista, parece que hay efectos interesantes sucediendo en los primeros 5 dígitos. La gran noticia es que no tenemos que entenderlo completamente: ahí es donde entra el aprendizaje automático.
+
+```{r plot2, echo = FALSE, fig.height=20}
+library(gridExtra)
+titanic_train$one <- sapply(titanic_train$FT, function(x){substr(x,1,1)})
+titanic_train$two <- sapply(titanic_train$FT, function(x){substr(x,2,2)})
+titanic_train$three <- sapply(titanic_train$FT, function(x){substr(x,3,3)})
+titanic_train$four <- sapply(titanic_train$FT, function(x){substr(x,4,4)})
+titanic_train$five <- sapply(titanic_train$FT, function(x){substr(x,5,5)})
+titanic_train$six <- sapply(titanic_train$FT, function(x){substr(x,6,6)})
+titanic_train$seven <- sapply(titanic_train$FT, function(x){substr(x,7,7)})
+
+titanic_train$one <- as.factor(titanic_train$one)
+titanic_train$two <- as.factor(titanic_train$two)
+titanic_train$three <- as.factor(titanic_train$three)
+titanic_train$four <- as.factor(titanic_train$four)
+titanic_train$five <- as.factor(titanic_train$five)
+titanic_train$six <- as.factor(titanic_train$six)
+titanic_train$seven <- as.factor(titanic_train$seven)
+
+onep <- ggplot(aes(y = Fare, x = factor(one)), data = titanic_train) + geom_boxplot() + labs(title="First Digit Price")
+ones <- ggplot(aes(x = factor(one), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count') + labs(title="Second Digit Survival")
+
+
+twop <- ggplot(aes(y = Fare, x = factor(two)), data = titanic_train) + geom_boxplot() + labs(title="Second Digit Price")
+twos <- ggplot(aes(x = factor(two), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count') + labs(title="Second Digit Survival")
+
+threep <- ggplot(aes(y = Fare, x = factor(three)), data = titanic_train) + geom_boxplot() + labs(title="Third Digit Price")
+threes <- ggplot(aes(x = factor(three), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count') + labs(title="Third Digit Survival")
+
+
+fourp <- ggplot(aes(y = Fare, x = factor(four)), data = titanic_train) + geom_boxplot() + labs(title="Fourth Digit Price")
+fours <- ggplot(aes(x = factor(four), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count') + labs(title="Fourth Digit Survival")
+
+fivep <- ggplot(aes(y = Fare, x = factor(five)), data = titanic_train) + geom_boxplot() + labs(title="Fifth Digit Price")
+fives <- ggplot(aes(x = factor(five), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count') + labs(title="Fifth Digit Survival")
+
+
+sixp <- ggplot(aes(y = Fare, x = factor(six)), data = titanic_train) + geom_boxplot() + labs(title="Sixth Digit Price")
+sixs <- ggplot(aes(x = factor(six), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count') + labs(title="Sixth Digit Survival")
+
+sevenp <- ggplot(aes(y = Fare, x = factor(seven)), data = titanic_train) + geom_boxplot() + labs(title="Seventh Digit Price")
+sevens <- ggplot(aes(x = factor(seven), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count') + labs(title="Seventh Digit Survival")
+
+grid.arrange(onep,ones,twop,twos, threep, threes, fourp, fours, fivep, fives, sixp, sixs, sevenp, sevens, ncol=2, nrow =7)
+```
+  
+
+### Fare
+
+Aparentemente en el Titanic, solo los hombres obtienen viajes gratis. Las mujeres pagan entre 5 y 24 dolares más por boleto, dependiendo de la clase.  
+
+```{r var_fare}
+titanic_train[titanic_train$Fare==0,]$Sex
+```
+
+Hay 248 precios únicos de entradas.  
+
+```{r}
+length(unique(titanic_train$Fare))
+```
+
+Como se esperaba, la primera clase es mucho más costosa.  
+
+```{r}
+titanic_train %>% group_by(Pclass) %>% summarise_each(funs(min, max, mean, median),Fare) 
+```
+
+Resulta que las mujeres pagan 24 dolares más en promedio por boleto. 
+
+```{r}
+titanic_train %>% group_by(Sex) %>% summarise_each(funs(min, max, mean, median),Fare)
+```
+
+### Cabin
+
+Hay 163 valores de cabina declarados con 148 únicos, faltan muchos. Es posible que la información de la cabina se pueda imputar según el número de boleto, el puerto de embarque y la clase.
+
+```{r var_cabin}
+length(unique(titanic_train$Cabin))
+```
+
+```{r cabin, echo = FALSE}
+sum(!substring(titanic_train$Cabin, 1, 1) == "")#Fill in cabin data
+datatable(data.frame(summary(titanic_train$Cabin)), colnames=c("Cabin", "Count")) # is it safe to impute cabin data?
+```
+
+Creamos ahora una variable de la letra de Cabin.  
+```{r CabinLetter}
+titanic_train$CL <- substring(titanic_train$Cabin, 1, 1)
+titanic_train$CL <- as.factor(titanic_train$CL)
+unique(titanic_train$CL)
+```
+
+El subconjunto es desproporcionado para la primera clase en Cherbourg y Southampton.  
+
+```{r Csum}
+summary(titanic_train[!substring(titanic_train$Cabin, 1, 1) == "",]$Embarked)
+summary(titanic_train[!substring(titanic_train$Cabin, 1, 1) == "",]$Pclass)
+
+```
+
+El primer gráfico muestra que las cabinas B y C son más caras.  
+
+```{r cabinsplit, echo = FALSE}
+
+cabins <- titanic_train[!substring(titanic_train$Cabin, 1, 1) == "",]
+cabins$PCL <- interaction(cabins$Pclass, cabins$CL)
+gg <- ggplot(aes(y = Fare, x = CL, fill = factor(Survived)), data = cabins) + geom_boxplot()
+gg
+```
+
+
+El segundo gráfico muestra que puede haber algunas relaciones interesantes aquí para la supervivencia. Es importante recordar que este subconjunto ya es más probable que sobreviva debido a su estado de primera clase.  
+
+```{r cabinsplit2, echo=FALSE}
+g2 <- ggplot(aes(x = CL, fill = factor(Survived)), data = cabins) + geom_bar(stat='count')
+g2
+```
+
+Según los datos, parece difícil imputar con precisión las asignaciones de cabina para el resto del conjunto de datos. En cambio, creemos un
+variable binaria para "habitación asignada" o "no asignada". Esto podría representar una mayor variación en el conjunto de datos inicial. Una de las hipótesis es que las personas que tienen asignada una habitación tienen alguna posición o estatus y tienen prioridad de elección, lo que puede reflejarse en relación con su supervivencia.  
+
+```{r cabinbin}
+titanic_train$Assigned <- 0
+titanic_train[!substring(titanic_train$Cabin, 1, 1) == "",]$Assigned <- 1
+```
+
+### Embarked
+
+Hay 3 ubicaciones de salida, la mayoría de las personas son de Southampton, Cherburgo y Queenstown. 
+
+```{r var_embarked}
+unique(titanic_train$Embarked) 
+summary(titanic_train$Embarked)
+```
+
+Hay 2 valores faltantes para el punto de embarque. Lo que nos lleva a la imputación.  
+
+```{r miss, echo = FALSE}
+datatable(titanic_train[Embarked=="",])
+```
+
+### Ajuste de los datos con ceros o valores nulos
+
+Los únicos valores faltantes se encuentran en las columnas Cabin, Age y Embarked.  
+
+```{r pressure, echo = FALSE}
+apply(titanic_train=="",2, sum)
+apply(is.na(titanic_train),2, sum)
+```
+
+Ajustamos los datos faltantes en la variable Age:
+
+```{r pr, results = 'hide'}
+titanic_train <- as.data.frame(titanic_train)
+#Imputing the missing age values with the MICE package
+impute <- mice(titanic_train[, !names(titanic_train) %in% c('PassengerId','Name','Ticket','Cabin','Survived', 'Assigned','FL','FT','ticketlength','one','two','three','four','five','six','seven')], method='rf')
+
+trained_mouse <- complete(impute)
+```
+
+```{r pplot, echo = FALSE, warning = FALSE}
+#Plotting Histograms
+ap <- ggplot(titanic_train, aes(x=Age))+geom_density(adjust=.5)+labs(title="Original Data")
+ap
+mp <- ggplot(trained_mouse, aes(x=Age))+geom_density(adjust=.5)+labs(title="Imputed Data")
+mp
+```
+
+Dado que los resultados están razonablemente bien emparejados, podemos reemplazar la columna original con los valores imputados.  
+
+```{r replace1}
+titanic_train$Age <- trained_mouse$Age
+```
+
+
+**Ahora vamos a analizar y ajustar los valores en la variable Enbarked.**
+
+Ahora estamos en esos 2 valores de la variable Embarked que faltan. Lo primero que viene a la mente es verificar con el valor de la variable Cabin. A partir de los datos, todas las cabinas que comienzan en B se embarcaron desde Southampton o Charbourg.  
+
+```{r Missing Cabin}
+unique(titanic_train[grep("*^B", titanic_train$Cabin),]$Embarked)
+```
+
+Los billetes de viaje cuestan 80 USD, que es muy similar a la tarifa promedio de los pasajeros S en cabinas tipo B.  
+
+```{r cab, echo = FALSE}
+titanic_train[grep("*^B", titanic_train$Cabin),] %>% group_by(Embarked) %>% summarize_each(funs(mean),Fare)
+```
+
+Sin embargo, la tarifa es más cercana a la mediana de la variable Fare de pasajeros tipo C.  
+
+```{r mcab, echo = FALSE}
+titanic_train[grep("*^B", titanic_train$Cabin),] %>% group_by(Embarked) %>% summarize_each(funs(median),Fare)
+```
+
+Entonces, lo que parece ser un inocente valor perdido aislado es en realidad una pregunta interesante sobre la imputación basada en la media o la mediana.
+
+```{r bark, echo = FALSE}
+bark <- titanic_train[grep("*^B", titanic_train$Cabin),] %>% group_by(Embarked)
+bark <- bark[!bark$Embarked=="",]
+#Also, there a 72.4% change of any passenger embarking from Southampton
+ggplot(bark, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
+  geom_boxplot() +
+  geom_hline(aes(yintercept=80), 
+    colour='red', linetype='dashed', lwd=2)
+```
+
+Puede parecer razonable imputar por la mediana de las tarifas de C porque ese es el valor más cercano. Sin embargo, si miramos hacia atrás en la sección de tarifas, vemos que hay un 72,4% de posibilidades de que un pasajero determinado se embarque desde S.  
+
+```{r split, echo = FALSE}
+summary(titanic_train$Embarked)
+bark2 <- titanic_train[!titanic_train$Embarked=="",]
+ggplot(bark2, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
+  geom_boxplot() +
+  geom_hline(aes(yintercept=80), 
+    colour='red', linetype='dashed', lwd=2)
+summary(titanic_train[grep("*^B", titanic_train$Cabin),]$Embarked)
+```
+
+
+Al final, decidí apliar 'S' a la variable y ver dónde eso nos conduce en el análisis posterior.
+
+```{r replace}
+titanic_train$Embarked[c(62, 830)] <- 'S'
+```
+
+# Análisis de las variables del dataset titanic
+
+Para los fines de este estudio, trabajamos con solo cuatro variables de entrada y una variable de respuesta. Como se mencionó anteriormente, las cuatro variables de entrada son Class, Sex, Age y Puerto de Embarque. La variable de respuesta es si sobrevivieron o no.  
+
+Podemos recortar los datos según nuestras necesidades usando los siguientes comandos:  
+
+```{r train_var_selector}
+df = titanic_train[,c(1,2,4,5,11)]
+```
+
+También hacemos que Age sea una variable categórica de la siguiente manera:
+
+* Si age <= 18, entonces age = child
+* Si 18 < age <= 60, entonces age = adult
+* Si age > 60, entonces age = senior
+
+```{r df_age_split}
+df$Age[df$Age <= 18] = "child"
+df$Age[(df$Age > 18) & (df$Age <= 60) & (df$Age != "child")] = "adult"
+df$Age[(df$Age != "child") & (df$Age != "adult")] = "senior"
+df$Age = as.factor(df$Age)
+```
+
+Después de realizar esta operación, nuestros datos se ven así:  
+
+
+```{r class_2, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+kable(head(df), caption = "Data set seleccionado",digits = 3, padding = 2, align = 'r')
+datatable(df)
+```
+
+```{r}
+summary(df)
+```
+
+## Diseño experimental
+
+El análisis de datos está organizado de la siguiente manera:
+
+* Computing efectos principales para los cuatro factores
+* Computing efectos de interacción para los seis pares de factores
+ Análisis computarizado de la varianza (ANOVA) para los cuatro efectos principales y los seis efectos de interacción.
+
+### Justificación del diseño
+La justificación racional detrás de este diseño es la siguiente. Claramente, tenemos un conjunto de datos a mano que se compone de cuatro variables de entrada, tres de las cuales son categóricas y la cuarta es numérica discreta. La variable de respuesta también es categórica.  
+
+Lo primero que se me ocurre es analizar individualmente el efecto de cada una de las variables de entrada en la variable de respuesta. Esto no es más que calcular los efectos principales.  
+
+El segundo nivel de investigación que se me ocurre es comprobar si un par de dos factores tiene un efecto sinérgico en la variable de respuesta que parece ser más que el efecto combinado de los dos factores. Esto no es más que computar los efectos de interacción.  
+
+En tercer lugar, desde un punto de vista puramente estadístico, estamos tratando con muestras de cuatro variables aleatorias como entradas. Si solo tuviéramos muestras de dos variables aleatorias, habríamos optado por una prueba z o una prueba t. Sin embargo, dado que hay más de dos variables aleatorias, se prefiere ANOVA, ya que hace exactamente eso.  
+
+Las siguientes subsecciones arrojan luz sobre los temas de aleatorización, Replicación y Medidas repetidas, y Bloqueo desde un punto de vista puramente teórico, así como desde el punto de vista de este estudio.  
+
+### Aleatorización
+La aleatorización se realiza para permitir la mayor fiabilidad y validez de las estimaciones estadísticas de los efectos del tratamiento. Más precisamente, se refiere a asignar aleatoriamente las unidades experimentales a través de los grupos de tratamiento. La aleatorización reduce el sesgo al minimizar el efecto de los factores de molestia o el ruido estocástico en los datos.  
+
+En este estudio, los pasajeros del Titanic se dividieron en tres clases separadas, determinadas por su precio de boleto y su riqueza y clase social. Los pasajeros en primera clase eran los más ricos del lote e incluían personas prominentes de clase alta, hombres de negocios, políticos, personal militar de alto rango, industriales, banqueros, etc. Los pasajeros de segunda clase incluían profesores, autores, clérigos, turistas, etc. Pasajeros en tercera clase fueron emigrantes que se mudaron a los Estados Unidos y Canadá. Además, los pasajeros fueron variados en etnia también. Hubo pasajeros del Imperio Otomano, otros tenían orígenes árabes, etc. Por lo tanto, para los fines de este estudio, hubo una buena cantidad de aleatorización de los pasajeros en función de su nacionalidad, etnia, condición económica, condición social, riqueza, etc.  
+
+### Replicación y / o medidas repetidas
+La replicación se refiere a la repetición de un experimento para reducir la variabilidad asociada con el fenómeno que se estudia. En cualquier proceso de muestreo, la variación que es inherente no se puede eliminar, pero lo mejor que se puede hacer es eliminar la variación causada por causas especiales. Esto es lo que se logra mediante la Replicación.
+
+Hay una línea delgada que separa la replicación de medidas repetidas. La medición repetida se refiere al uso de los mismos sujetos dentro de cada rama del estudio, incluido el grupo de control. 
+
+En este estudio, los datos disponibles están escritos en piedra. Realizar la replicación significaría hacer que el barco del Titanic navegue varias veces y recopilar los datos en todos esos viajes: algunos de los cuales pueden hundirse y otros no. Realizar medidas repetidas significaría hacer que la nave del Titanic navegue en un número de universos paralelos con el mismo grupo de pasajeros. Claramente, ambos no son prácticos y, por lo tanto, en nuestro estudio, no hay evidencia de replicación o medidas repetidas.  
+
+### Bloqueo
+El bloqueo se refiere a organizar unidades experimentales en grupos (bloques) que son similares entre sí de alguna manera, forma o forma. Estos bloques se analizan juntos para reducir la variabilidad conocida. La idea principal detrás del bloqueo es que una variabilidad que ocurre en cualquiera de las variables de entrada que no se pueden superar se confunde con una interacción para eliminar su influencia en la variable de respuesta.
+
+La base teórica para el bloqueo se puede entender a partir de la siguiente ecuación. Dadas dos variables aleatorias X e Y,
+
+Var (X-Y) = Var (X) + Var (Y) -2Cov (X, Y)
+
+La varianza de la diferencia se puede minimizar maximizando la covarianza (o la correlación) entre X e Y.
+
+En este estudio, hemos analizado los datos como un todo porque no había ninguna razón para sospechar la existencia de variabilidad conocida para ninguna de las variables de entrada consideradas.  
+
+## Análisis estadístico
+
+### Análisis exploratorio de datos
+
+Resumen de los datos limpios:
+
+```{r}
+summary(df)
+```
+
+Visualizamos los histogramas de las cuatro variables de entrada:
+
+```{r}
+barplot(table(df$Pclass), xlab="Class", ylab="Frequency", main="Histogram of Passenger Class")
+barplot(table(df$Sex), xlab="Sex", ylab="Frequency", main="Histogram of Sex")
+barplot(table(df$Age), xlab="Age", ylab="Frequency", main="Histogram of Age")
+barplot(table(df$Embarked), xlab="Port of Embarkment", ylab="Frequency", main="Histogram of Port of Embarkment")
+```
+
+### Test
+
+Antes de comenzar con las pruebas, convertimos el dataframe categórico en un dataframe numérico.
+
+```{r}
+old_df = df
+df$Pclass = as.integer(df$Pclass)
+df$Sex = as.integer(df$Sex)
+df$Age = as.integer(df$Age)
+df$Embarked = as.integer(df$Embarked)
+df$Survived = as.integer(df$Survived)
+head(df)
+```
+
+Parece haber más sobrevivientes en promedio de la 1ra clase en comparación con los otros dos. El número más bajo de sobrevivientes en promedio fue de la 3ra clase.  
+
+```{r}
+me_pclass = c(0,0,0)
+me_pclass[1] = mean(df$Survived[df$Pclass==1])
+me_pclass[2] = mean(df$Survived[df$Pclass==2])
+me_pclass[3] = mean(df$Survived[df$Pclass==3])
+plot(me_pclass, type="o", main="Main Effect of Passenger Class", xlab="Passenger Class", ylab="Main Effect",
+     xaxt="n")
+axis(1, at=c(1,2,3), labels=c("1st", "2nd", "3rd"))
+```
+
+Las sobrevivientes femeninas eran mucho más numerosas que los hombres.
+
+```{r}
+me_sex = c(0,0)
+me_sex[1] = mean(df$Survived[df$Sex==1])
+me_sex[2] = mean(df$Survived[df$Sex==2])
+plot(me_sex, type="o", main="Main Effect of Sex", xlab="Sex", ylab="Main Effect", xaxt="n")
+axis(1, at=c(1,2), labels=c("Female", "Male"))
+```
+
+Los supervivientes máximos en promedio de la categoría de edad eran niños, seguidos de adultos y personas mayores.  
+
+```{r}
+me_age = c(0,0,0)
+me_age[1] = mean(df$Survived[df$Age==1])
+me_age[2] = mean(df$Survived[df$Age==2])
+me_age[3] = mean(df$Survived[df$Age==3])
+plot(me_age, type="o", main="Main Effect of Age", xlab="Age", ylab="Main Effect", xaxt="n")
+axis(1, at=c(1,2,3), labels=c("Adult", "Children", "Senior Citizen"))
+```
+
+La gente que abordó el Titanic en Cherbourg tenía el número máximo de supervivientes en promedio, seguidos de los que abordaron el barco en Southampton y finalmente en Queenstown.
+
+```{r}
+me_emb = c(0,0,0)
+me_emb[1] = mean(df$Survived[df$Embarked==1])
+me_emb[2] = mean(df$Survived[df$Embarked==2])
+me_emb[3] = mean(df$Survived[df$Embarked==3])
+plot(me_emb, type="o", main="Main Effect of Port of Embarkment", xlab="Port of Embarkment", ylab="Main Effect",
+     xaxt="n")
+axis(1, at=c(1,2,3), labels=c("Cherbourg", "Queenstown", "Southampton"))
+```
+
+Existe un claro efecto de interacción entre la clase de pasajeros y el sexo. Los pasajeros femeninos de primera y segunda clase tuvieron un mayor número de sobrevivientes que las pasajeras de tercera clase. Los pasajeros varones de primera clase tenían un número promedio mayor de sobrevivientes que los pasajeros masculinos de segunda y tercera clase.  
+
+```{r}
+interaction.plot(df$Pclass, df$Sex, df$Survived, xlab="Passenger Class", ylab="Mean number of Survivors",
+                  main="Interaction Effect between Passenger Class and Sex", legend=FALSE)
+legend("topright", c("Female","Male"), lty=c("dashed", "solid"), title="Sex")
+```
+
+Hay un efecto de interacción entre la clase de pasajero y la edad. En general, los adultos tenían una media de sobrevivientes mejor que las personas mayores, que eran mejores que los niños. Más adultos de 1ra clase sobrevivieron que la 2da clase, que tuvo más sobrevivientes que la 3ra clase. Lo mismo es la tendencia para las personas mayores también. Sin embargo, el número promedio de sobrevivientes fue más alto para los niños de 2a clase y el más bajo para los niños de 1ra clase.  
+
+```{r}
+interaction.plot(df$Pclass, df$Age, df$Survived, xlab="Passenger Class", ylab="Mean number of Survivors",
+                 main="Interaction Effect between Passenger Class and Age", legend=FALSE)
+legend("topright", c("Adult","Child", "Senior"), lty=c("dashed", "solid", "dotted"), title="Age")
+```
+
+También hay un efecto de interacción entre la Clase de Pasajero y el Puerto de Embarque. Para los pasajeros que abordaron el barco desde Queenstown y Southampton, los pasajeros de primera clase sobrevivieron más y los pasajeros de tercera clase sobrevivieron lo mínimo. Para los pasajeros que abordaron el barco desde Cherbourg, el número medio de supervivientes era casi el mismo para los pasajeros de 1ra y 2da clase, que eran mayores que los pasajeros de 3ra clase. Para los pasajeros de segunda y tercera clase que abordaron desde Cherbourg y Queenstown, no parece haber ningún efecto de interacción.
+
+```{r}
+interaction.plot(df$Pclass, df$Embarked, df$Survived, xlab="Passenger Class", ylab="Mean number of Survivors",
+                 main="Interaction Effect between Passenger Class and Port of Embarkment", legend=FALSE)
+legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "solid", "dotted"),
+       title="Port of Embarkment")
+```
+
+Es interesante observar que en un momento tan crítico (cuando el barco se hundía), el número medio de supervivientes para la 1ra clase era mucho menor que las otras dos clases. Esto esencialmente refleja y refuerza su poder y estatura en la sociedad: se les dio la prioridad de alcanzar la seguridad, incluso en un momento en que todo el barco se hundía y casi todos tenían una oportunidad sustancial de encontrarse con su muerte ese día.
+
+Parece haber un efecto de interacción entre la edad y el sexo. Hubo más sobrevivientes de hombres que adultos varones, que fueron mayores que los varones. Por el contrario, hubo más sobrevivientes de niñas que mujeres de la tercera edad, que fueron mayores que las mujeres adultas. En general, hubo más mujeres supervivientes en comparación con los hombres en todos los grupos de edad.  
+
+```{r}
+interaction.plot(df$Sex, df$Age, df$Survived, xlab="Sex", ylab="Mean number of Survivors",
+                 main="Interaction Effect between Sex and Age", legend=FALSE, xtick=FALSE, xaxt="n")
+axis(1, c(1,2), labels=c("Female", "Male"))
+legend("topright", c("Adult","Child", "Senior"), lty=c("dashed", "solid", "dotted"), title="Age")
+```
+
+No parece haber ningún efecto de interacción entre Sexo y Puerto de Embarque.  
+
+```{r}
+interaction.plot(df$Sex, df$Embarked, df$Survived, xlab="Sex", ylab="Mean number of Survivors", 
+                 main="Interaction Effect between Sex and Port of Embarkment", legend=FALSE, xtick = FALSE, xaxt="n")
+axis(1, c(1,2), labels=c("Female", "Male"))
+legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "solid", "dotted"),
+       title="Port of Embarkment")
+```
+
+Hay un efecto de interacción entre la edad y el puerto de embarque. Los jubilados de Southampton y Cherbourg sobrevivieron en menor número que los que abordaron el barco desde Queenstown. Para adultos y niños, las personas que abordaron en Southampton sobrevivieron más que las de Queenstown, que eran más que las de Cherbourg. No parece haber un efecto de interacción en la parte adultos-niños del gráfico.  
+
+```{r}
+interaction.plot(df$Age, df$Embarked, df$Survived, xlab="Age", ylab="Mean number of Survivors", 
+                 main="Interaction Effect between Age and Port of Embarkment", legend=FALSE, xtick = FALSE, xaxt="n")
+axis(1, c(1,2,3), labels=c("Adults", "Children", "Senior Citizens"))
+legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "solid", "dotted"),
+       title="Port of Embarkment")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
