@@ -865,6 +865,112 @@ legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "s
        title="Port of Embarkment")
 ```
 
+## ANOVA
+
+Los principales efectos de Clase de Pasajero, Sexo y Puerto de Embarque son significativos. Hubo más sobrevivientes en la primera clase en comparación con la segunda y tercera clase. Hubo más mujeres sobrevivientes. No hay un efecto significativo de la edad, lo que significa que el número medio de supervivientes de todos los grupos de edad fue casi el mismo.  
+
+```{r}
+me1 = aov(df$Survived ~ df$Pclass)
+anova(me1)
+
+me2 = aov(df$Survived ~ df$Sex)
+anova(me2)
+
+me3 = aov(df$Survived ~ df$Age)
+anova(me3)
+
+me4 = aov(df$Survived ~ df$Embarked)
+anova(me4)
+
+```
+
+Existen importantes efectos principales de Clase de Pasajero, Sexo y Puerto de Embarque. Esto se ve reforzado una vez más por los ANOVA de interacción bidireccional. Los efectos de interacción de la Clase de Pasajeros son significativos con Sexo y Edad, pero no con Puerto de Embarque. Los efectos de interacción del sexo no son significativos con la edad o el puerto de embarque. El efecto de interacción de Age with Port of Embarkment no es significativo.  
+
+```{r}
+ie12 = aov(df$Survived ~ df$Pclass * df$Sex)
+anova(ie12)
+
+ie13 = aov(df$Survived ~ df$Pclass * df$Age)
+anova(ie13)
+
+ie14 = aov(df$Survived ~ df$Pclass * df$Embarked)
+anova(ie14)
+
+ie23 = aov(df$Survived ~ df$Sex * df$Age)
+anova(ie23)
+
+ie24 = aov(df$Survived ~ df$Sex * df$Embarked)
+anova(ie24)
+
+ie34 = aov(df$Survived ~ df$Age * df$Embarked)
+anova(ie34)
+
+```
+
+### Estimacion
+En base al análisis de datos exploratorios, efectos principales, efectos de interacción bidireccional y ANOVA para todos los efectos principales y de interacción, podemos estimar que si el buque del Titanic volviera a zarpar (para el caso, cualquier barco) y si fuera para terminar con el mismo destino, entonces, en promedio, habría más sobrevivientes de la clase alta, más sobrevivientes que son mujeres y niños y más sobrevivientes que abordaron el barco en Cherbourg.
+
+### Diagnóstico y verificación de adecuación del modelo
+El diagrama Q-Q es una herramienta para comparar dos distribuciones entre sí en base a la comparación de sus cuantiles. Ninguno de los gráficos de Q-Q a continuación se adhieren a la línea, lo que significa que los datos son de naturaleza altamente no lineal. Además, la no linealidad de los puntos sugiere que los datos no se distribuyen normalmente.
+
+El gráfico residual se utiliza en el análisis de datos estadísticos para detectar la no linealidad de los datos, varianzas de errores desiguales y valores atípicos. En la mayoría de las siguientes parcelas residuales vs fit, los residuos no rebotan aleatoriamente alrededor de la línea cero, pero parecen ajustarse a una línea que tiene una pendiente negativa. Esto sugiere que los datos no son de naturaleza lineal. Los residuos forman aproximadamente una banda horizontal alrededor de la línea cero, lo que sugiere que las varianzas de los términos de error son iguales. Por último, no hay residuos que se destaquen del patrón básico de los residuos, lo que sugiere que no hay valores atípicos.
+
+Estas observaciones sugieren que el conjunto de datos no ha cumplido todas las suposiciones para implementar ANOVA. Y esto es cierto porque, como se explicó anteriormente, no hubo alcance de replicación y medidas repetidas. Sin embargo, aún obtenemos resultados razonables porque hubo algunas suposiciones para ANOVA que eran verdaderas en el conjunto de datos.
+
+```{r}
+qqnorm(residuals(me1))
+qqline(residuals(me1))
+
+plot(fitted(me1), residuals(me1))
+
+qqnorm(residuals(me2))
+qqline(residuals(me2))
+
+plot(fitted(me2), residuals(me2))
+
+qqnorm(residuals(me3))
+qqline(residuals(me3))
+
+plot(fitted(me3), residuals(me3))
+
+qqnorm(residuals(me4))
+qqline(residuals(me4))
+
+plot(fitted(me4), residuals(me4))
+
+qqnorm(residuals(ie12))
+qqline(residuals(ie12))
+
+plot(fitted(ie12), residuals(ie12))
+
+qqnorm(residuals(ie13))
+qqline(residuals(ie13))
+
+plot(fitted(ie13), residuals(ie13))
+
+qqnorm(residuals(ie14))
+qqline(residuals(ie14))
+
+plot(fitted(ie14), residuals(ie14))
+
+qqnorm(residuals(ie23))
+qqline(residuals(ie23))
+
+plot(fitted(ie23), residuals(ie23))
+
+qqnorm(residuals(ie24))
+qqline(residuals(ie24))
+
+plot(fitted(ie24), residuals(ie24))
+
+qqnorm(residuals(ie34))
+qqline(residuals(ie34))
+
+plot(fitted(ie34), residuals(ie34))
+
+```
+
+
 
 
 
