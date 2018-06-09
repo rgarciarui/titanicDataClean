@@ -9,6 +9,7 @@ output:
     toc_depth: 3
     theme: cerulean
     highlight: tango
+    always_allow_html: yes
   pdf_document:
     toc: TRUE
     highlight: default
@@ -28,7 +29,7 @@ options(OutDec=",")
 library(knitr)
 ```
 
-```{r set_library_to_plot, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+```{r set_library_to_plot, echo=FALSE, cache=FALSE, results = 'asis', message=FALSE, comment=FALSE, warning=FALSE}
 library(dplyr)
 library(data.table)
 library(ggplot2)
@@ -151,7 +152,7 @@ read.csv() será un objeto data.frame:
 knitr::opts_knit$set(root.dir = csv_dir)
 ```
 
-```{r read_dataset, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+```{r read_dataset, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE}
 titanic_train <- read.csv("train.csv", header = TRUE)
 titanic_test <- read.csv("test.csv", header = TRUE)
 titanic_test.label <- read.csv("gender_submission.csv", header = TRUE)
@@ -172,7 +173,7 @@ knitr::opts_knit$set(root.dir = baseDirectory)
   
 El tipo de datos asignado automáticamente a cada campo es el siguiente:  
 
-```{r class, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+```{r class, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE}
 # Tipo de dato asignado a cada campo
 kable(sapply(titanic_train, function(x) class(x)), caption = "Tipo de dato asignado a cada campo: train data",digits = 3, padding = 2, align = 'r')
 
@@ -182,7 +183,7 @@ kable(sapply(titanic_test, function(x) class(x)), caption = "Tipo de dato asigna
 
 En primer lugar debemos observar que hay una variable 'PassengerId' que es una variable de tipo Identificador, pero que no aporta nada al estudio desde el conjunto de datos de entrenamiento. Por ello procedemos a eliminarla, directamente:  
 
-```{r getOut_PassengerId, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+```{r getOut_PassengerId, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE}
 titanic_train <- titanic_train[,-1]
 
 kable(head(titanic_train), caption = "Dataset Titanic sin PassengerId: train data",digits = 3, padding = 2, align = 'r')
@@ -416,7 +417,7 @@ Regresaremos sobre esto más tarde una vez que completemos esta decodificación.
 titanic_train$ticketlength <- sapply(as.character(titanic_train$FT),nchar)
 ```
 
-```{r plot23, echo = FALSE}
+```{r plot23, echo = FALSE, message=FALSE}
 s1 <- ggplot(aes(x = factor(ticketlength), fill = factor(Survived)), data = titanic_train) + geom_bar(stat='count', position='dodge') + labs(title="Ticket Number Length")
 s1
 
@@ -428,7 +429,7 @@ A riesgo de ir un paso demasiado lejos, veamos los números de los boletos indiv
 
 Desde mi punto de vista, parece que hay efectos interesantes sucediendo en los primeros 5 dígitos. La gran noticia es que no tenemos que entenderlo completamente: ahí es donde entra el aprendizaje automático.
 
-```{r plot2, echo = FALSE, fig.height=20}
+```{r plot2, echo = FALSE, fig.height=20, message=FALSE}
 library(gridExtra)
 titanic_train$one <- sapply(titanic_train$FT, function(x){substr(x,1,1)})
 titanic_train$two <- sapply(titanic_train$FT, function(x){substr(x,2,2)})
@@ -484,19 +485,19 @@ titanic_train[titanic_train$Fare==0,]$Sex
 
 Hay 248 precios únicos de entradas.  
 
-```{r}
+```{r message=FALSE}
 length(unique(titanic_train$Fare))
 ```
 
 Como se esperaba, la primera clase es mucho más costosa.  
 
-```{r}
+```{r message=FALSE}
 titanic_train %>% group_by(Pclass) %>% summarise_each(funs(min, max, mean, median),Fare) 
 ```
 
 Resulta que las mujeres pagan 24 dolares más en promedio por boleto. 
 
-```{r}
+```{r message=FALSE}
 titanic_train %>% group_by(Sex) %>% summarise_each(funs(min, max, mean, median),Fare)
 ```
 
@@ -613,19 +614,19 @@ unique(titanic_train[grep("*^B", titanic_train$Cabin),]$Embarked)
 
 Los billetes de viaje cuestan 80 USD, que es muy similar a la tarifa promedio de los pasajeros S en cabinas tipo B.  
 
-```{r cab, echo = FALSE}
+```{r cab, echo = FALSE, message=FALSE}
 titanic_train[grep("*^B", titanic_train$Cabin),] %>% group_by(Embarked) %>% summarize_each(funs(mean),Fare)
 ```
 
 Sin embargo, la tarifa es más cercana a la mediana de la variable Fare de pasajeros tipo C.  
 
-```{r mcab, echo = FALSE}
+```{r mcab, echo = FALSE, message=FALSE}
 titanic_train[grep("*^B", titanic_train$Cabin),] %>% group_by(Embarked) %>% summarize_each(funs(median),Fare)
 ```
 
 Entonces, lo que parece ser un inocente valor perdido aislado es en realidad una pregunta interesante sobre la imputación basada en la media o la mediana.
 
-```{r bark, echo = FALSE}
+```{r bark, echo = FALSE, message=FALSE}
 bark <- titanic_train[grep("*^B", titanic_train$Cabin),] %>% group_by(Embarked)
 bark <- bark[!bark$Embarked=="",]
 #Also, there a 72.4% change of any passenger embarking from Southampton
@@ -648,7 +649,7 @@ summary(titanic_train[grep("*^B", titanic_train$Cabin),]$Embarked)
 ```
 
 
-Al final, decidí apliar 'S' a la variable y ver dónde eso nos conduce en el análisis posterior.
+Al final, decidí ampliar 'S' a la variable y ver dónde eso nos conduce en el análisis posterior.
 
 ```{r replace}
 titanic_train$Embarked[c(62, 830)] <- 'S'
@@ -970,18 +971,293 @@ plot(fitted(ie34), residuals(ie34))
 
 ```
 
+## Evaluación de algoritmos
+
+Intentaremos algunos algoritmos lineales y no lineales:
+* Algoritmos Lineales: Regresión Logística (LG), Análisis Lineal Discriminado (LDA) y Regresión Logística Regularizada (GLMNET).
+* Algoritmos no lineales: k-Nearest Neighbors (KNN), árboles de clasificación y regresión (CART), Naive Bayes (NB) y máquinas de vectores de soporte con funciones de base radial (SVM).
+
+### Selección y verificación de variables
+
+A partir de los valores de muestra que se muestran en el conjunto de datos, podemos ver que PassengerId, Name, Ticket, Cabin y Embarked probablemente no serán útiles en nuestro análisis, por lo que decidimos que podemos eliminar estas variables.
+
+```{r datasetTrain_del_redundant}
+# se eliminan variables redundantes
+datasetTrain <- titanic_train[,c(-3, -8, -10, -11, -c(12:23))]
+
+datasetTrain$Pclass = as.integer(datasetTrain$Pclass)
+datasetTrain$Age = as.integer(datasetTrain$Age)
+#datasetTrain$Survived = as.integer(datasetTrain$Survived)
+# sumario
+summary(datasetTrain)
+sapply(datasetTrain, class)
+```
+
+Echemos un vistazo más de cerca a las distribuciones de clase.  
+
+```{r datasetTrain_class}
+# class distribution
+cbind(freq=table(datasetTrain$Survived), percentage=prop.table(table(datasetTrain$Survived))*100)
+```
+
+Hay algún desequilibrio en los valores de la clase. Observamos una división aproximada de 60% a 40% para Died (= 0) y Survived (= 1) en los valores de clase.  
+
+```{r datasetTrain_corr}
+datasetTrain[,3] <- as.numeric((datasetTrain[,3]))
+complete_cases <- complete.cases(datasetTrain)
+
+kable(cor(datasetTrain[complete_cases,2:5]), caption = "Correlación del conjunto de datos",digits = 3, padding = 2, align = 'r')
+#cor(datasetTrain[complete_cases,2:5])
+```
+
+Los valores por encima de 0,75 o por debajo de -0,75 son indicativos de una correlación alta positiva o alta negativa. A partir de los resultados anteriores, las variables no están altamente correlacionadas en este conjunto de datos.  
+
+### Visualizacion del conjunto de datos
+
+```{r datasetTrain_plot_01}
+# barplot of males and females who survived
+barplot(table(datasetTrain$Survived, datasetTrain[,3]))
+legend("topleft", legend = c("Mueren", "Sobreviven"), fill=c("black","grey"))
+```
+
+### Opciones de prueba y métrica de evaluación.
+
+Vamos a definir un test de control.
+Usaremos una validación cruzada de 10 veces con 3 repeticiones. Esta es una buena configuración de test de control estándar. Es un problema de clasificación binario. Para simplificar, utilizaremos métricas de precisión y Kappa.
 
 
+```{r set_library_to_plot_2, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
+library(caret)
+library(corrplot)
+```
 
 
+```{r datasetTrain_hardness}
+# 10-fold cross validation with 3 repeats
+trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
+metric <- "Accuracy"
+```
+
+### Algoritmos de muestreo (Spot-Check Algorithms)  
 
 
+```{r set_library_to_plot_3, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE, message=FALSE}
+library(caret)
+library(corrplot)
+library(MASS)
+library(glmnet)
+library(Matrix)
+library(foreach)
+library(rpart)
+library(klaR)
+library(kernlab)
+```
 
 
+```{r datasetTrain_Spot-Check, warning=FALSE, comment=FALSE, message=FALSE}
+# LG
+set.seed(7)
+fit.glm <- train(Survived~., data=datasetTrain, method="glm", metric=metric, 
+                 trControl=trainControl)
+
+# LDA
+set.seed(7)
+fit.lda <- train(Survived~., data=datasetTrain, method="lda", metric=metric, 
+                 trControl=trainControl)
+
+# GLMNET
+set.seed(7)
+fit.glmnet <- train(Survived~., data=datasetTrain, method="glmnet", metric=metric,
+                    trControl=trainControl)
+
+# KNN
+set.seed(7)
+fit.knn <- train(Survived~., data=datasetTrain, method="knn", metric=metric, 
+                 trControl=trainControl)
+
+# CART
+set.seed(7)
+fit.cart <- train(Survived~., data=datasetTrain, method="rpart", metric=metric,
+                  trControl=trainControl)
+
+# Naive Bayes
+set.seed(7)
+fit.nb <- train(Survived~., data=datasetTrain, method="nb", metric=metric, 
+                trControl=trainControl)
+
+# SVM
+set.seed(7)
+fit.svm <- train(Survived~., data=datasetTrain, method="svmRadial", metric=metric,
+                 trControl=trainControl)
+
+```
+
+```{r datasetTrain_compare, warning=FALSE, comment=FALSE, message=FALSE}
+# Compare algorithms
+results <- resamples(list(LG=fit.glm, LDA=fit.lda, GLMNET=fit.glmnet, KNN=fit.knn,
+    CART=fit.cart, NB=fit.nb, SVM=fit.svm))
+summary(results)
+```
 
 
+```{r datasetTrain_compare_plot, warning=FALSE, comment=FALSE, message=FALSE}
+dotplot(results)
+```
+
+SVM tiene la mayor precisión con un 82%.  
+
+### Evaluación de los Algoritmos
+
+Aplicaríamos una transformación Box-Cox para aplanar la distribución.  
+
+```{r datasetTrain_evaluate, warning=FALSE, comment=FALSE, message=FALSE}
+# Compare algorithms
+# 10-fold cross validation with 3 repeats
+trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
+metric <- "Accuracy"
+# LG
+set.seed(7)
+fit.glm <- train(Survived~., data=datasetTrain, method="glm", metric=metric, preProc=c("BoxCox"),
+    trControl=trainControl)
+# LDA
+set.seed(7)
+fit.lda <- train(Survived~., data=datasetTrain, method="lda", metric=metric, preProc=c("BoxCox"),
+    trControl=trainControl)
+# GLMNET
+set.seed(7)
+fit.glmnet <- train(Survived~., data=datasetTrain, method="glmnet", metric=metric,
+    preProc=c("BoxCox"), trControl=trainControl)
+# KNN
+set.seed(7)
+fit.knn <- train(Survived~., data=datasetTrain, method="knn", metric=metric, preProc=c("BoxCox"),
+    trControl=trainControl)
+# CART
+set.seed(7)
+fit.cart <- train(Survived~., data=datasetTrain, method="rpart", metric=metric,
+    preProc=c("BoxCox"), trControl=trainControl)
+# Naive Bayes
+set.seed(7)
+fit.nb <- train(Survived~., data=datasetTrain, method="nb", metric=metric, preProc=c("BoxCox"),
+    trControl=trainControl)
+# SVM
+set.seed(7)
+fit.svm <- train(Survived~., data=datasetTrain, method="svmRadial", metric=metric,
+    preProc=c("BoxCox"), trControl=trainControl)
+# Compare algorithms
+transformResults <- resamples(list(LG=fit.glm, LDA=fit.lda, GLMNET=fit.glmnet, KNN=fit.knn,
+    CART=fit.cart, NB=fit.nb, SVM=fit.svm))
+summary(transformResults)
+```
+
+```{r datasetTrain_evaluate_plot, warning=FALSE, comment=FALSE, message=FALSE}
+dotplot(transformResults)
+```
+
+La precisión de SVM aumentó ligeramente al 83%. Aún no es lo suficientemente bueno.  
+
+## Mejorar la precisión  
+
+Vamos ahora a probar un poco de ajuste de los mejores algoritmos, específicamente SVM y veamos si podemos aumentar la precisión.  
+
+### Afinación del algoritmo  
+
+La implementación SVM tiene dos parámetros que podemos sintonizar con el paquete caret. El sigma, que es un término de suavizado, y C, que es una restricción de costos.  
+
+```{r datasetTrain_precission, warning=FALSE, comment=FALSE, message=FALSE}
+# 10-fold cross validation with 3 repeats
+trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
+metric <- "Accuracy"
+set.seed(7)
+grid <- expand.grid(.sigma=c(0.025, 0.05, 0.1, 0.15), .C=seq(1, 10, by=1))
+fit.svm <- train(Survived~., data=datasetTrain, method="svmRadial", metric=metric, tuneGrid=grid,
+    preProc=c("BoxCox"), trControl=trainControl)
+print(fit.svm)
+```
+
+```{r datasetTrain_precission_plot, warning=FALSE, comment=FALSE, message=FALSE}
+plot(fit.svm)
+```
 
 
+### Conjuntos
+
+Veamos 4 métodos de conjunto: 
+
+* **Bagging**: contenedor CART (BAG) y random forest (RF).
+* **Boosting**: aumento de gradiente estocástico (GBM) y C5.0 (C50).
+
+Utilizaremos la misma prueba de control que anteriormente, incluida la transformación de Box-Cox que aplana las distribuciones.  
+
+
+```{r set_library_to_plot_4, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE, message=FALSE}
+library(ipred)
+#library(plyr)
+library(e1071)
+library(randomForest)
+library(gbm)
+library(survival)
+library(splines)
+library(parallel)
+```
+
+
+```{r datasetTrain_ensembles, warning=FALSE, comment=FALSE, message=FALSE}
+
+# 10-fold cross validation with 3 repeats
+trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
+metric <- "Accuracy"
+
+# Bagged CART
+set.seed(7)
+fit.treebag <- train(Survived~., data=datasetTrain, method="treebag", metric=metric,
+    trControl=trainControl)
+
+# Random Forest
+set.seed(7)
+fit.rf <- train(Survived~., data=datasetTrain, method="rf", metric=metric, preProc=c("BoxCox"),
+    trControl=trainControl)
+
+# Stochastic Gradient Boosting
+set.seed(7)
+fit.gbm <- train(Survived~., data=datasetTrain, method="gbm", metric=metric, preProc=c("BoxCox"),
+    trControl=trainControl, verbose=FALSE)
+
+# C5.0
+#set.seed(7)
+#fit.c50 <- train(Survived~., data=datasetTrain, method="C5.0", metric=metric, preProc=c("BoxCox"),
+#    trControl=trainControl)
+
+# Compare results
+#ensembleResults <- resamples(list(BAG=fit.treebag, RF=fit.rf, GBM=fit.gbm, C50=fit.c50))
+ensembleResults <- resamples(list(BAG=fit.treebag, RF=fit.rf, GBM=fit.gbm))
+summary(ensembleResults)
+```
+
+```{r datasetTrain_ensembles_plot, warning=FALSE, comment=FALSE, message=FALSE}
+dotplot(ensembleResults)
+```
+
+
+### Finalizar el modelo  
+
+Vamos a finalizar el modelo de SVM para usar en todo nuestro conjunto de entrenamiento.
+
+Tendremos que eliminar las filas con valores perdidos del conjunto de datos de entrenamiento, así como el conjunto de datos de validación. El siguiente código muestra la preparación de los parámetros de preprocesamiento utilizando el conjunto de datos de entrenamiento.
+
+```{r datasetTrain_final_model, warning=FALSE, comment=FALSE, message=FALSE}
+# prepare parameters for data transform
+# set.seed(7)
+model <- svm(Survived ~ ., data = datasetTrain)
+testData <- datasetTest[,c(-1, -8, -10, -11)]
+preprocessParams <- preProcess(testData, method=c("BoxCox"))
+testData$Age[is.na(testData$Age)] <- 0
+testData$Fare[is.na(testData$Fare)] <- 0
+testData <- predict(preprocessParams, testData)
+
+predictions <- predict(model, testData, type="class")
+submit <- data.frame(PassengerId = datasetTest$PassengerId, Survived = predictions)
+write.csv(submit, file = "firstSVM.csv", row.names = FALSE)
+```
 
 
 
