@@ -22,10 +22,7 @@ csv_dir = paste(baseDirectory, "/", "titanic", sep="")
 # cambio directorio para ver datos shp
 knitr::opts_knit$set(root.dir = csv_dir)
 
-# cambio directorio para ver datos shp
-setwd(csv_dir)
-
-## ----read_dataset, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE----
+## ----read_dataset, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE----
 titanic_train <- read.csv("train.csv", header = TRUE)
 titanic_test <- read.csv("test.csv", header = TRUE)
 titanic_test.label <- read.csv("gender_submission.csv", header = TRUE)
@@ -34,9 +31,6 @@ titanic_test = titanic_test[,c(1,12,2:11)]
 
 titanic_train <- as.data.table(titanic_train)
 titanic_test <- as.data.table(titanic_test)
-
-# retornamos al directorio para trabajar con el shp
-setwd(baseDirectory)
 
 kable(head(titanic_train), caption = "train.csv",digits = 3, padding = 2, align = 'r')
 kable(head(titanic_test), caption = "test.csv",digits = 3, padding = 2, align = 'r')

@@ -1169,7 +1169,7 @@ Ajustamos los datos faltantes en la variable Age:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{titanic_train <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(titanic_train)}
-\CommentTok{#Imputing the missing age values with the MICE package}
+\CommentTok{#imputar los valores de edad faltantes con el paquete MICE}
 \NormalTok{impute <-}\StringTok{ }\KeywordTok{mice}\NormalTok{(titanic_train[, }\OperatorTok{!}\KeywordTok{names}\NormalTok{(titanic_train) }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'PassengerId'}\NormalTok{,}\StringTok{'Name'}\NormalTok{,}\StringTok{'Ticket'}\NormalTok{,}\StringTok{'Cabin'}\NormalTok{,}\StringTok{'Survived'}\NormalTok{, }\StringTok{'Assigned'}\NormalTok{,}\StringTok{'FL'}\NormalTok{,}\StringTok{'FT'}\NormalTok{,}\StringTok{'ticketlength'}\NormalTok{,}\StringTok{'one'}\NormalTok{,}\StringTok{'two'}\NormalTok{,}\StringTok{'three'}\NormalTok{,}\StringTok{'four'}\NormalTok{,}\StringTok{'five'}\NormalTok{,}\StringTok{'six'}\NormalTok{,}\StringTok{'seven'}\NormalTok{)], }\DataTypeTok{method=}\StringTok{'rf'}\NormalTok{)}
 
 \NormalTok{trained_mouse <-}\StringTok{ }\KeywordTok{complete}\NormalTok{(impute)}
@@ -1305,7 +1305,7 @@ manera:
 Después de realizar esta operación, nuestros datos se ven así:
 
 \begin{longtable}[]{@{}rrrrr@{}}
-\caption{Data set seleccionado}\tabularnewline
+\caption{Dataset seleccionado}\tabularnewline
 \toprule
 Survived & Pclass & Sex & Age & Embarked\tabularnewline
 \midrule
@@ -1319,7 +1319,7 @@ Survived & Pclass & Sex & Age & Embarked\tabularnewline
 1 & 3 & female & adult & S\tabularnewline
 1 & 1 & female & adult & S\tabularnewline
 0 & 3 & male & adult & S\tabularnewline
-0 & 3 & male & child & Q\tabularnewline
+0 & 3 & male & adult & Q\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -1333,9 +1333,9 @@ Survived & Pclass & Sex & Age & Embarked\tabularnewline
 
 \begin{verbatim}
 ##  Survived Pclass      Sex          Age      Embarked
-##  0:549    1:216   female:314   adult :695    :  0   
-##  1:342    2:184   male  :577   child :172   C:168   
-##           3:491                senior: 24   Q: 77   
+##  0:549    1:216   female:314   adult :689    :  0   
+##  1:342    2:184   male  :577   child :175   C:168   
+##           3:491                senior: 27   Q: 77   
 ##                                             S:646
 \end{verbatim}
 
@@ -1462,9 +1462,9 @@ Resumen de los datos limpios:
 
 \begin{verbatim}
 ##  Survived Pclass      Sex          Age      Embarked
-##  0:549    1:216   female:314   adult :695    :  0   
-##  1:342    2:184   male  :577   child :172   C:168   
-##           3:491                senior: 24   Q: 77   
+##  0:549    1:216   female:314   adult :689    :  0   
+##  1:342    2:184   male  :577   child :175   C:168   
+##           3:491                senior: 27   Q: 77   
 ##                                             S:646
 \end{verbatim}
 
@@ -1472,7 +1472,7 @@ Visualizamos los histogramas de las cuatro variables de entrada:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass), }\DataTypeTok{xlab=}\StringTok{"Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequency"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histogram of Passenger Class"}\NormalTok{)}
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass), }\DataTypeTok{xlab=}\StringTok{"Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequency"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histograma de Passenger Class"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1480,7 +1480,7 @@ Visualizamos los histogramas de las cuatro variables de entrada:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Sex), }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequency"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histogram of Sex"}\NormalTok{)}
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Sex), }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequencia"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histograma de Sex"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1488,7 +1488,7 @@ Visualizamos los histogramas de las cuatro variables de entrada:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Age), }\DataTypeTok{xlab=}\StringTok{"Age"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequency"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histogram of Age"}\NormalTok{)}
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Age), }\DataTypeTok{xlab=}\StringTok{"Age"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequencia"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histograma de Age"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1496,7 +1496,7 @@ Visualizamos los histogramas de las cuatro variables de entrada:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Embarked), }\DataTypeTok{xlab=}\StringTok{"Port of Embarkment"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequency"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histogram of Port of Embarkment"}\NormalTok{)}
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{Embarked), }\DataTypeTok{xlab=}\StringTok{"Port of Embarkment"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Frequencia"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Histograma de Port of Embarkment"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1526,7 +1526,7 @@ en un dataframe numérico.
 ## 3        2      3   1   1        4
 ## 4        2      1   1   1        4
 ## 5        1      3   2   1        4
-## 6        1      3   2   2        3
+## 6        1      3   2   1        3
 \end{verbatim}
 
 Parece haber más sobrevivientes en promedio de la 1ra clase en
@@ -1539,9 +1539,9 @@ promedio fue de la 3ra clase.
 \NormalTok{me_pclass[}\DecValTok{1}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Pclass}\OperatorTok{==}\DecValTok{1}\NormalTok{])}
 \NormalTok{me_pclass[}\DecValTok{2}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Pclass}\OperatorTok{==}\DecValTok{2}\NormalTok{])}
 \NormalTok{me_pclass[}\DecValTok{3}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Pclass}\OperatorTok{==}\DecValTok{3}\NormalTok{])}
-\KeywordTok{plot}\NormalTok{(me_pclass, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Main Effect of Passenger Class"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Main Effect"}\NormalTok{,}
+\KeywordTok{plot}\NormalTok{(me_pclass, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Efecto principal de Passenger Class"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Efecto principal"}\NormalTok{,}
      \DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
-\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{at=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"1st"}\NormalTok{, }\StringTok{"2nd"}\NormalTok{, }\StringTok{"3rd"}\NormalTok{))}
+\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{at=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"1er"}\NormalTok{, }\StringTok{"2nd"}\NormalTok{, }\StringTok{"3er"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1554,8 +1554,8 @@ Las sobrevivientes femeninas eran mucho más numerosas que los hombres.
 \NormalTok{me_sex =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)}
 \NormalTok{me_sex[}\DecValTok{1}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Sex}\OperatorTok{==}\DecValTok{1}\NormalTok{])}
 \NormalTok{me_sex[}\DecValTok{2}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Sex}\OperatorTok{==}\DecValTok{2}\NormalTok{])}
-\KeywordTok{plot}\NormalTok{(me_sex, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Main Effect of Sex"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Main Effect"}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
-\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{at=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Female"}\NormalTok{, }\StringTok{"Male"}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(me_sex, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Efecto principal de Sex"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Efecto principal"}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
+\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{at=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Mujer"}\NormalTok{, }\StringTok{"Hombre"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1570,7 +1570,7 @@ niños, seguidos de adultos y personas mayores.
 \NormalTok{me_age[}\DecValTok{1}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Age}\OperatorTok{==}\DecValTok{1}\NormalTok{])}
 \NormalTok{me_age[}\DecValTok{2}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Age}\OperatorTok{==}\DecValTok{2}\NormalTok{])}
 \NormalTok{me_age[}\DecValTok{3}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Age}\OperatorTok{==}\DecValTok{3}\NormalTok{])}
-\KeywordTok{plot}\NormalTok{(me_age, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Main Effect of Age"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Age"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Main Effect"}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(me_age, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Efecto principal de Age"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Age"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Efecto principal"}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
 \KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{at=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Adult"}\NormalTok{, }\StringTok{"Children"}\NormalTok{, }\StringTok{"Senior Citizen"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
@@ -1587,7 +1587,7 @@ Southampton y finalmente en Queenstown.
 \NormalTok{me_emb[}\DecValTok{1}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Embarked}\OperatorTok{==}\DecValTok{1}\NormalTok{])}
 \NormalTok{me_emb[}\DecValTok{2}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Embarked}\OperatorTok{==}\DecValTok{2}\NormalTok{])}
 \NormalTok{me_emb[}\DecValTok{3}\NormalTok{] =}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{Survived[df}\OperatorTok{$}\NormalTok{Embarked}\OperatorTok{==}\DecValTok{3}\NormalTok{])}
-\KeywordTok{plot}\NormalTok{(me_emb, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Main Effect of Port of Embarkment"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Port of Embarkment"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Main Effect"}\NormalTok{,}
+\KeywordTok{plot}\NormalTok{(me_emb, }\DataTypeTok{type=}\StringTok{"o"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Efecto principal de Port of Embarkment"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Port of Embarkment"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Efecto principal"}\NormalTok{,}
      \DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
 \KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{at=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Cherbourg"}\NormalTok{, }\StringTok{"Queenstown"}\NormalTok{, }\StringTok{"Southampton"}\NormalTok{))}
 \end{Highlighting}
@@ -1603,9 +1603,9 @@ sobrevivientes que los pasajeros masculinos de segunda y tercera clase.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass, df}\OperatorTok{$}\NormalTok{Sex, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Mean number of Survivors"}\NormalTok{,}
-                  \DataTypeTok{main=}\StringTok{"Interaction Effect between Passenger Class and Sex"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{)}
-\KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Female"}\NormalTok{,}\StringTok{"Male"}\NormalTok{), }\DataTypeTok{lty=}\KeywordTok{c}\NormalTok{(}\StringTok{"dashed"}\NormalTok{, }\StringTok{"solid"}\NormalTok{), }\DataTypeTok{title=}\StringTok{"Sex"}\NormalTok{)}
+\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass, df}\OperatorTok{$}\NormalTok{Sex, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Número promedio de sobrevivientes"}\NormalTok{,}
+                  \DataTypeTok{main=}\StringTok{"Efecto de interacción entre Passenger Class y Sex"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{)}
+\KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Mujer"}\NormalTok{,}\StringTok{"Hombre"}\NormalTok{), }\DataTypeTok{lty=}\KeywordTok{c}\NormalTok{(}\StringTok{"dashed"}\NormalTok{, }\StringTok{"solid"}\NormalTok{), }\DataTypeTok{title=}\StringTok{"Sex"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1621,8 +1621,8 @@ niños de 2a clase y el más bajo para los niños de 1ra clase.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass, df}\OperatorTok{$}\NormalTok{Age, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Mean number of Survivors"}\NormalTok{,}
-                 \DataTypeTok{main=}\StringTok{"Interaction Effect between Passenger Class and Age"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{)}
+\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass, df}\OperatorTok{$}\NormalTok{Age, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Número promedio de sobrevivientes"}\NormalTok{,}
+                 \DataTypeTok{main=}\StringTok{"Efecto de interacción entre Passenger Class y Age"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{)}
 \KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Adult"}\NormalTok{,}\StringTok{"Child"}\NormalTok{, }\StringTok{"Senior"}\NormalTok{), }\DataTypeTok{lty=}\KeywordTok{c}\NormalTok{(}\StringTok{"dashed"}\NormalTok{, }\StringTok{"solid"}\NormalTok{, }\StringTok{"dotted"}\NormalTok{), }\DataTypeTok{title=}\StringTok{"Age"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -1641,8 +1641,8 @@ parece haber ningún efecto de interacción.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass, df}\OperatorTok{$}\NormalTok{Embarked, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Mean number of Survivors"}\NormalTok{,}
-                 \DataTypeTok{main=}\StringTok{"Interaction Effect between Passenger Class and Port of Embarkment"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{)}
+\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Pclass, df}\OperatorTok{$}\NormalTok{Embarked, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Passenger Class"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Número promedio de sobrevivientes"}\NormalTok{,}
+                 \DataTypeTok{main=}\StringTok{"Efecto de interacción entre Passenger Class y Port of Embarkment"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{)}
 \KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Cherbourg"}\NormalTok{,}\StringTok{"Queenstown"}\NormalTok{,}\StringTok{"Southampton"}\NormalTok{), }\DataTypeTok{lty=}\KeywordTok{c}\NormalTok{(}\StringTok{"dashed"}\NormalTok{, }\StringTok{"solid"}\NormalTok{, }\StringTok{"dotted"}\NormalTok{),}
        \DataTypeTok{title=}\StringTok{"Port of Embarkment"}\NormalTok{)}
 \end{Highlighting}
@@ -1667,8 +1667,8 @@ hombres en todos los grupos de edad.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Sex, df}\OperatorTok{$}\NormalTok{Age, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Mean number of Survivors"}\NormalTok{,}
-                 \DataTypeTok{main=}\StringTok{"Interaction Effect between Sex and Age"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xtick=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
+\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Sex, df}\OperatorTok{$}\NormalTok{Age, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Número promedio de sobrevivientes"}\NormalTok{,}
+                 \DataTypeTok{main=}\StringTok{"Efecto de interacción entre Sex y Age"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xtick=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
 \KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Female"}\NormalTok{, }\StringTok{"Male"}\NormalTok{))}
 \KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Adult"}\NormalTok{,}\StringTok{"Child"}\NormalTok{, }\StringTok{"Senior"}\NormalTok{), }\DataTypeTok{lty=}\KeywordTok{c}\NormalTok{(}\StringTok{"dashed"}\NormalTok{, }\StringTok{"solid"}\NormalTok{, }\StringTok{"dotted"}\NormalTok{), }\DataTypeTok{title=}\StringTok{"Age"}\NormalTok{)}
 \end{Highlighting}
@@ -1681,8 +1681,8 @@ Embarque.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Sex, df}\OperatorTok{$}\NormalTok{Embarked, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Mean number of Survivors"}\NormalTok{, }
-                 \DataTypeTok{main=}\StringTok{"Interaction Effect between Sex and Port of Embarkment"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xtick =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
+\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Sex, df}\OperatorTok{$}\NormalTok{Embarked, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Sex"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Número promedio de sobrevivientes"}\NormalTok{, }
+                 \DataTypeTok{main=}\StringTok{"Efecto de interacción entre Sex y Port of Embarkment"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xtick =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
 \KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Female"}\NormalTok{, }\StringTok{"Male"}\NormalTok{))}
 \KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Cherbourg"}\NormalTok{,}\StringTok{"Queenstown"}\NormalTok{,}\StringTok{"Southampton"}\NormalTok{), }\DataTypeTok{lty=}\KeywordTok{c}\NormalTok{(}\StringTok{"dashed"}\NormalTok{, }\StringTok{"solid"}\NormalTok{, }\StringTok{"dotted"}\NormalTok{),}
        \DataTypeTok{title=}\StringTok{"Port of Embarkment"}\NormalTok{)}
@@ -1700,8 +1700,8 @@ de interacción en la parte adultos-niños del gráfico.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Age, df}\OperatorTok{$}\NormalTok{Embarked, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Age"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Mean number of Survivors"}\NormalTok{, }
-                 \DataTypeTok{main=}\StringTok{"Interaction Effect between Age and Port of Embarkment"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xtick =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
+\KeywordTok{interaction.plot}\NormalTok{(df}\OperatorTok{$}\NormalTok{Age, df}\OperatorTok{$}\NormalTok{Embarked, df}\OperatorTok{$}\NormalTok{Survived, }\DataTypeTok{xlab=}\StringTok{"Age"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Número promedio de sobrevivientes"}\NormalTok{, }
+                 \DataTypeTok{main=}\StringTok{"Efecto de interacción entre Age y Port of Embarkment"}\NormalTok{, }\DataTypeTok{legend=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xtick =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{xaxt=}\StringTok{"n"}\NormalTok{)}
 \KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{), }\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Adults"}\NormalTok{, }\StringTok{"Children"}\NormalTok{, }\StringTok{"Senior Citizens"}\NormalTok{))}
 \KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Cherbourg"}\NormalTok{,}\StringTok{"Queenstown"}\NormalTok{,}\StringTok{"Southampton"}\NormalTok{), }\DataTypeTok{lty=}\KeywordTok{c}\NormalTok{(}\StringTok{"dashed"}\NormalTok{, }\StringTok{"solid"}\NormalTok{, }\StringTok{"dotted"}\NormalTok{),}
        \DataTypeTok{title=}\StringTok{"Port of Embarkment"}\NormalTok{)}
@@ -1767,8 +1767,8 @@ edad fue casi el mismo.
 ## 
 ## Response: df$Survived
 ##            Df  Sum Sq Mean Sq F value Pr(>F)
-## df$Age      1   0,343 0,34256  1,4475 0,2292
-## Residuals 889 210,385 0,23665
+## df$Age      1   0,166 0,16606  0,7011 0,4026
+## Residuals 889 210,561 0,23685
 \end{verbatim}
 
 \begin{Shaded}
@@ -1829,10 +1829,10 @@ Port of Embarkment no es significativo.
 ## 
 ## Response: df$Survived
 ##                   Df  Sum Sq Mean Sq  F value    Pr(>F)    
-## df$Pclass          1  24,143 24,1429 116,4910 < 2,2e-16 ***
-## df$Age             1   0,712  0,7120   3,4357  0,064135 .  
-## df$Pclass:df$Age   1   2,040  2,0404   9,8453  0,001759 ** 
-## Residuals        887 183,832  0,2073                       
+## df$Pclass          1  24,143 24,1429 116,0401 < 2,2e-16 ***
+## df$Age             1   0,439  0,4391   2,1104  0,146659    
+## df$Pclass:df$Age   1   1,599  1,5991   7,6861  0,005681 ** 
+## Residuals        887 184,546  0,2081                       
 ## ---
 ## Signif. codes:  0 '***' 0,001 '**' 0,01 '*' 0,05 '.' 0,1 ' ' 1
 \end{verbatim}
@@ -1869,10 +1869,10 @@ Port of Embarkment no es significativo.
 ## 
 ## Response: df$Survived
 ##                Df  Sum Sq Mean Sq  F value  Pr(>F)    
-## df$Sex          1  62,213  62,213 373,7241 < 2e-16 ***
-## df$Age          1   0,013   0,013   0,0776 0,78063    
-## df$Sex:df$Age   1   0,844   0,844   5,0696 0,02459 *  
-## Residuals     887 147,657   0,166                     
+## df$Sex          1  62,213  62,213 373,1891 < 2e-16 ***
+## df$Age          1   0,001   0,001   0,0044 0,94710    
+## df$Sex:df$Age   1   0,644   0,644   3,8657 0,04959 *  
+## Residuals     887 147,869   0,167                     
 ## ---
 ## Signif. codes:  0 '***' 0,001 '**' 0,01 '*' 0,05 '.' 0,1 ' ' 1
 \end{verbatim}
@@ -1909,10 +1909,10 @@ Port of Embarkment no es significativo.
 ## 
 ## Response: df$Survived
 ##                     Df  Sum Sq Mean Sq F value    Pr(>F)    
-## df$Age               1   0,343  0,3426  1,4858    0,2232    
-## df$Embarked          1   5,884  5,8844 25,5233 5,307e-07 ***
-## df$Age:df$Embarked   1   0,001  0,0007  0,0032    0,9548    
-## Residuals          887 204,500  0,2306                      
+## df$Age               1   0,166  0,1661  0,7204    0,3963    
+## df$Embarked          1   5,869  5,8694 25,4604 5,478e-07 ***
+## df$Age:df$Embarked   1   0,212  0,2116  0,9180    0,3383    
+## Residuals          887 204,480  0,2305                      
 ## ---
 ## Signif. codes:  0 '***' 0,001 '**' 0,01 '*' 0,05 '.' 0,1 ' ' 1
 \end{verbatim}
@@ -2156,13 +2156,13 @@ que podemos eliminar estas variables.
 \end{Shaded}
 
 \begin{verbatim}
-##  Survived     Pclass          Sex           Age           SibSp      
-##  0:549    Min.   :1,000   female:314   Min.   : 0,0   Min.   :0,000  
-##  1:342    1st Qu.:2,000   male  :577   1st Qu.:20,0   1st Qu.:0,000  
-##           Median :3,000                Median :28,0   Median :0,000  
-##           Mean   :2,309                Mean   :29,2   Mean   :0,523  
-##           3rd Qu.:3,000                3rd Qu.:37,0   3rd Qu.:1,000  
-##           Max.   :3,000                Max.   :80,0   Max.   :8,000  
+##  Survived     Pclass          Sex           Age            SibSp      
+##  0:549    Min.   :1,000   female:314   Min.   : 0,00   Min.   :0,000  
+##  1:342    1st Qu.:2,000   male  :577   1st Qu.:20,00   1st Qu.:0,000  
+##           Median :3,000                Median :28,00   Median :0,000  
+##           Mean   :2,309                Mean   :29,39   Mean   :0,523  
+##           3rd Qu.:3,000                3rd Qu.:38,00   3rd Qu.:1,000  
+##           Max.   :3,000                Max.   :80,00   Max.   :8,000  
 ##      Parch             Fare       
 ##  Min.   :0,0000   Min.   :  0,00  
 ##  1st Qu.:0,0000   1st Qu.:  7,91  
@@ -2187,7 +2187,7 @@ Echemos un vistazo más de cerca a las distribuciones de clase.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# class distribution}
+\CommentTok{# distribución de clases}
 \KeywordTok{cbind}\NormalTok{(}\DataTypeTok{freq=}\KeywordTok{table}\NormalTok{(datasetTrain}\OperatorTok{$}\NormalTok{Survived), }\DataTypeTok{percentage=}\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(datasetTrain}\OperatorTok{$}\NormalTok{Survived))}\OperatorTok{*}\DecValTok{100}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -2221,10 +2221,10 @@ los valores de clase.
 & Pclass & Sex & Age & SibSp\tabularnewline
 \midrule
 \endhead
-Pclass & 1,000 & 0,132 & -0,373 & 0,083\tabularnewline
-Sex & 0,132 & 1,000 & 0,083 & -0,115\tabularnewline
-Age & -0,373 & 0,083 & 1,000 & -0,284\tabularnewline
-SibSp & 0,083 & -0,115 & -0,284 & 1,000\tabularnewline
+Pclass & 1,000 & 0,132 & -0,369 & 0,083\tabularnewline
+Sex & 0,132 & 1,000 & 0,072 & -0,115\tabularnewline
+Age & -0,369 & 0,072 & 1,000 & -0,311\tabularnewline
+SibSp & 0,083 & -0,115 & -0,311 & 1,000\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -2244,7 +2244,7 @@ datos}\label{visualizacion-del-conjunto-de-datos}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# barplot of males and females who survived}
+\CommentTok{# barra de hombres y mujeres que sobrevivieron}
 \KeywordTok{barplot}\NormalTok{(}\KeywordTok{table}\NormalTok{(datasetTrain}\OperatorTok{$}\NormalTok{Survived, datasetTrain[,}\DecValTok{3}\NormalTok{]))}
 \KeywordTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }\DataTypeTok{legend =} \KeywordTok{c}\NormalTok{(}\StringTok{"Mueren"}\NormalTok{, }\StringTok{"Sobreviven"}\NormalTok{), }\DataTypeTok{fill=}\KeywordTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{,}\StringTok{"grey"}\NormalTok{))}
 \end{Highlighting}
@@ -2266,7 +2266,7 @@ FALSE corrplot 0.84 loaded
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# 10-fold cross validation with 3 repeats}
+\CommentTok{# 10-fold validación cruzada con 3 repeticiones}
 \NormalTok{trainControl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method=}\StringTok{"repeatedcv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{10}\NormalTok{, }\DataTypeTok{repeats=}\DecValTok{3}\NormalTok{)}
 \NormalTok{metric <-}\StringTok{ "Accuracy"}
 \end{Highlighting}
@@ -2316,7 +2316,7 @@ Algorithms)}\label{algoritmos-de-muestreo-spot-check-algorithms}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Compare algorithms}
+\CommentTok{# Comparar algorithms}
 \NormalTok{results <-}\StringTok{ }\KeywordTok{resamples}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\DataTypeTok{LG=}\NormalTok{fit.glm, }\DataTypeTok{LDA=}\NormalTok{fit.lda, }\DataTypeTok{GLMNET=}\NormalTok{fit.glmnet, }\DataTypeTok{KNN=}\NormalTok{fit.knn,}
     \DataTypeTok{CART=}\NormalTok{fit.cart, }\DataTypeTok{NB=}\NormalTok{fit.nb, }\DataTypeTok{SVM=}\NormalTok{fit.svm))}
 \KeywordTok{summary}\NormalTok{(results)}
@@ -2333,23 +2333,23 @@ FALSE Number of resamples: 30
 FALSE 
 FALSE Accuracy 
 FALSE             Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-FALSE LG     0,7191011 0,7688202 0,7888889 0,7916644 0,8158836 0,8522727    0
-FALSE LDA    0,7415730 0,7681818 0,7933208 0,7897789 0,8089888 0,8333333    0
-FALSE GLMNET 0,7303371 0,7752809 0,7977528 0,7924133 0,8089888 0,8426966    0
-FALSE KNN    0,6222222 0,6629213 0,6927591 0,6951277 0,7191011 0,7555556    0
-FALSE CART   0,7528090 0,7871099 0,8089888 0,8058549 0,8202247 0,8666667    0
-FALSE NB     0,7111111 0,7647004 0,7865169 0,7872244 0,8158836 0,8636364    0
-FALSE SVM    0,7777778 0,8095194 0,8202247 0,8253186 0,8426966 0,8777778    0
+FALSE LG     0,7303371 0,7666667 0,7977528 0,7909150 0,8089888 0,8539326    0
+FALSE LDA    0,7415730 0,7752809 0,7877029 0,7905363 0,8105805 0,8426966    0
+FALSE GLMNET 0,7303371 0,7752809 0,7921717 0,7935159 0,8179463 0,8539326    0
+FALSE KNN    0,5777778 0,6638577 0,6853933 0,6861846 0,7078652 0,7752809    0
+FALSE CART   0,7528090 0,7865169 0,7977528 0,7999085 0,8105805 0,8522727    0
+FALSE NB     0,7111111 0,7647004 0,7865169 0,7864753 0,8158836 0,8636364    0
+FALSE SVM    0,7865169 0,8089888 0,8202247 0,8260763 0,8426966 0,8863636    0
 FALSE 
 FALSE Kappa 
 FALSE             Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-FALSE LG     0,3878955 0,5081778 0,5511687 0,5533451 0,6036037 0,6867470    0
-FALSE LDA    0,4368638 0,5042717 0,5527683 0,5476149 0,5837689 0,6489613    0
-FALSE GLMNET 0,4089651 0,5074709 0,5588497 0,5521113 0,6003170 0,6470255    0
-FALSE KNN    0,1883289 0,2586046 0,3167851 0,3338376 0,4019420 0,4822845    0
-FALSE CART   0,4518477 0,5410857 0,5648993 0,5735673 0,6093717 0,7194805    0
-FALSE NB     0,4045802 0,4883741 0,5495991 0,5465268 0,6083261 0,7060134    0
-FALSE SVM    0,5225464 0,5858267 0,6127151 0,6200833 0,6571867 0,7387863    0
+FALSE LG     0,4089651 0,5116279 0,5599978 0,5513881 0,5885233 0,6923691    0
+FALSE LDA    0,4368638 0,5088855 0,5444634 0,5492882 0,5981387 0,6705447    0
+FALSE GLMNET 0,4089651 0,5145115 0,5562724 0,5557121 0,5993004 0,6923691    0
+FALSE KNN    0,0630137 0,2634506 0,3134464 0,3112884 0,3588912 0,5074709    0
+FALSE CART   0,4518477 0,5225464 0,5567239 0,5613498 0,5836033 0,6832780    0
+FALSE NB     0,4045802 0,4883741 0,5495991 0,5449397 0,6083261 0,7060134    0
+FALSE SVM    0,5348006 0,5794743 0,6127151 0,6239371 0,6611033 0,7550111    0
 \end{verbatim}
 
 \begin{Shaded}
@@ -2369,8 +2369,8 @@ Aplicaríamos una transformación Box-Cox para aplanar la distribución.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Compare algorithms}
-\CommentTok{# 10-fold cross validation with 3 repeats}
+\CommentTok{# Comparar algorithms}
+\CommentTok{# 10-fold validación cruzada con 3 repeticiones}
 \NormalTok{trainControl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method=}\StringTok{"repeatedcv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{10}\NormalTok{, }\DataTypeTok{repeats=}\DecValTok{3}\NormalTok{)}
 \NormalTok{metric <-}\StringTok{ "Accuracy"}
 \CommentTok{# LG}
@@ -2418,23 +2418,23 @@ FALSE Number of resamples: 30
 FALSE 
 FALSE Accuracy 
 FALSE             Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-FALSE LG     0,7191011 0,7752809 0,7933208 0,7927880 0,8181818 0,8444444    0
-FALSE LDA    0,7415730 0,7752809 0,7877029 0,7908898 0,8105805 0,8333333    0
-FALSE GLMNET 0,7303371 0,7759051 0,7888889 0,7935412 0,8197140 0,8444444    0
-FALSE KNN    0,6179775 0,6573970 0,6966292 0,6973792 0,7303371 0,7777778    0
-FALSE CART   0,7528090 0,7871099 0,8089888 0,8058549 0,8202247 0,8666667    0
+FALSE LG     0,7303371 0,7752809 0,7988764 0,7950265 0,8158836 0,8539326    0
+FALSE LDA    0,7415730 0,7752809 0,7865169 0,7909065 0,8105805 0,8426966    0
+FALSE GLMNET 0,7303371 0,7752809 0,7988764 0,7961502 0,8181818 0,8539326    0
+FALSE KNN    0,6111111 0,6516854 0,6853933 0,6880366 0,7147096 0,7888889    0
+FALSE CART   0,7528090 0,7865169 0,7977528 0,7999085 0,8105805 0,8522727    0
 FALSE NB     0,7191011 0,7647004 0,7865169 0,7872202 0,8158836 0,8636364    0
-FALSE SVM    0,7666667 0,8089888 0,8314607 0,8268209 0,8426966 0,8777778    0
+FALSE SVM    0,7865169 0,8022472 0,8202247 0,8226968 0,8426966 0,8750000    0
 FALSE 
 FALSE Kappa 
 FALSE             Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-FALSE LG     0,3878955 0,5131291 0,5527683 0,5535334 0,6065524 0,6657825    0
-FALSE LDA    0,4368638 0,5137015 0,5520819 0,5493452 0,5873347 0,6489613    0
-FALSE GLMNET 0,4089651 0,5160722 0,5418066 0,5543202 0,6098819 0,6668449    0
-FALSE KNN    0,1817198 0,2705609 0,3177005 0,3410921 0,4241539 0,5068493    0
-FALSE CART   0,4518477 0,5410857 0,5648993 0,5735673 0,6093717 0,7194805    0
+FALSE LG     0,4089651 0,5074709 0,5592700 0,5573102 0,6019531 0,6923691    0
+FALSE LDA    0,4368638 0,5088855 0,5444634 0,5492832 0,5853110 0,6705447    0
+FALSE GLMNET 0,4089651 0,5133254 0,5588497 0,5592961 0,6098819 0,6923691    0
+FALSE KNN    0,1600000 0,2476345 0,3083828 0,3198123 0,3761966 0,5553510    0
+FALSE CART   0,4518477 0,5225464 0,5567239 0,5613498 0,5836033 0,6832780    0
 FALSE NB     0,4084020 0,4883741 0,5495991 0,5457440 0,6083261 0,7060134    0
-FALSE SVM    0,4960000 0,5837689 0,6262469 0,6227335 0,6582002 0,7387863    0
+FALSE SVM    0,5237961 0,5758282 0,6105033 0,6159759 0,6611033 0,7290034    0
 \end{verbatim}
 
 \begin{Shaded}
@@ -2461,7 +2461,7 @@ restricción de costos.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# 10-fold cross validation with 3 repeats}
+\CommentTok{# 10-fold validación cruzada con 3 repeticiones}
 \NormalTok{trainControl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method=}\StringTok{"repeatedcv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{10}\NormalTok{, }\DataTypeTok{repeats=}\DecValTok{3}\NormalTok{)}
 \NormalTok{metric <-}\StringTok{ "Accuracy"}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{7}\NormalTok{)}
@@ -2486,48 +2486,48 @@ FALSE Resampling results across tuning parameters:
 FALSE 
 FALSE   sigma  C   Accuracy   Kappa    
 FALSE   0,025   1  0,8010067  0,5686501
-FALSE   0,025   2  0,8070037  0,5814230
-FALSE   0,025   3  0,8133712  0,5946212
-FALSE   0,025   4  0,8159847  0,6006412
-FALSE   0,025   5  0,8182319  0,6057530
-FALSE   0,025   6  0,8193682  0,6082303
-FALSE   0,025   7  0,8201089  0,6098752
-FALSE   0,025   8  0,8216070  0,6130737
-FALSE   0,025   9  0,8227264  0,6158236
-FALSE   0,025  10  0,8230968  0,6165157
-FALSE   0,050   1  0,8152313  0,5988775
-FALSE   0,050   2  0,8215944  0,6134579
-FALSE   0,050   3  0,8238291  0,6183819
-FALSE   0,050   4  0,8245741  0,6195244
-FALSE   0,050   5  0,8238292  0,6177151
-FALSE   0,050   6  0,8230885  0,6162453
-FALSE   0,050   7  0,8245866  0,6195844
-FALSE   0,050   8  0,8249527  0,6204653
-FALSE   0,050   9  0,8238333  0,6181273
-FALSE   0,050  10  0,8238333  0,6181273
-FALSE   0,100   1  0,8223268  0,6149020
-FALSE   0,100   2  0,8234502  0,6172761
-FALSE   0,100   3  0,8241909  0,6184778
-FALSE   0,100   4  0,8223223  0,6142783
-FALSE   0,100   5  0,8208282  0,6110585
-FALSE   0,100   6  0,8204536  0,6103603
-FALSE   0,100   7  0,8197004  0,6084708
-FALSE   0,100   8  0,8196962  0,6083035
-FALSE   0,100   9  0,8193258  0,6074548
-FALSE   0,100  10  0,8204579  0,6098512
-FALSE   0,150   1  0,8226968  0,6156927
-FALSE   0,150   2  0,8219435  0,6130798
-FALSE   0,150   3  0,8211944  0,6116064
-FALSE   0,150   4  0,8215689  0,6120764
-FALSE   0,150   5  0,8215773  0,6117350
-FALSE   0,150   6  0,8208282  0,6099482
-FALSE   0,150   7  0,8211986  0,6110013
-FALSE   0,150   8  0,8215985  0,6124300
-FALSE   0,150   9  0,8208536  0,6107928
-FALSE   0,150  10  0,8193596  0,6076674
+FALSE   0,025   2  0,8066166  0,5801728
+FALSE   0,025   3  0,8129924  0,5937496
+FALSE   0,025   4  0,8156185  0,5999121
+FALSE   0,025   5  0,8186191  0,6068582
+FALSE   0,025   6  0,8197427  0,6093501
+FALSE   0,025   7  0,8197343  0,6091552
+FALSE   0,025   8  0,8216070  0,6136474
+FALSE   0,025   9  0,8219731  0,6143070
+FALSE   0,025  10  0,8223476  0,6151981
+FALSE   0,050   1  0,8148610  0,5980096
+FALSE   0,050   2  0,8212282  0,6127083
+FALSE   0,050   3  0,8238333  0,6184549
+FALSE   0,050   4  0,8253232  0,6214589
+FALSE   0,050   5  0,8241996  0,6185616
+FALSE   0,050   6  0,8242037  0,6186859
+FALSE   0,050   7  0,8249570  0,6206063
+FALSE   0,050   8  0,8253315  0,6218268
+FALSE   0,050   9  0,8253315  0,6217221
+FALSE   0,050  10  0,8264552  0,6240691
+FALSE   0,100   1  0,8234546  0,6176767
+FALSE   0,100   2  0,8249569  0,6204464
+FALSE   0,100   3  0,8242077  0,6186767
+FALSE   0,100   4  0,8227053  0,6157310
+FALSE   0,100   5  0,8230841  0,6164676
+FALSE   0,100   6  0,8227095  0,6156355
+FALSE   0,100   7  0,8223349  0,6146574
+FALSE   0,100   8  0,8227137  0,6155518
+FALSE   0,100   9  0,8223349  0,6145280
+FALSE   0,100  10  0,8227137  0,6154124
+FALSE   0,150   1  0,8256976  0,6226371
+FALSE   0,150   2  0,8230840  0,6161262
+FALSE   0,150   3  0,8215773  0,6128923
+FALSE   0,150   4  0,8212028  0,6118802
+FALSE   0,150   5  0,8215690  0,6124453
+FALSE   0,150   6  0,8208407  0,6114211
+FALSE   0,150   7  0,8197256  0,6094039
+FALSE   0,150   8  0,8208620  0,6119779
+FALSE   0,150   9  0,8227305  0,6165126
+FALSE   0,150  10  0,8212407  0,6132127
 FALSE 
 FALSE Accuracy was used to select the optimal model using the largest value.
-FALSE The final values used for the model were sigma = 0,05 and C = 8.
+FALSE The final values used for the model were sigma = 0,05 and C = 10.
 \end{verbatim}
 
 \begin{Shaded}
@@ -2556,7 +2556,7 @@ transformación de Box-Cox que aplana las distribuciones.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# 10-fold cross validation with 3 repeats}
+\CommentTok{# 10-fold validación cruzada con 3 repeticiones}
 \NormalTok{trainControl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method=}\StringTok{"repeatedcv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{10}\NormalTok{, }\DataTypeTok{repeats=}\DecValTok{3}\NormalTok{)}
 \NormalTok{metric <-}\StringTok{ "Accuracy"}
 
@@ -2597,15 +2597,15 @@ FALSE Number of resamples: 30
 FALSE 
 FALSE Accuracy 
 FALSE          Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-FALSE BAG 0,7000000 0,7668539 0,7865169 0,7931289 0,8111111 0,8863636    0
-FALSE RF  0,7752809 0,8089888 0,8202247 0,8238081 0,8328652 0,8888889    0
-FALSE GBM 0,7528090 0,8089888 0,8258427 0,8249358 0,8426966 0,9000000    0
+FALSE BAG 0,6777778 0,7668539 0,7888889 0,7875479 0,8089888 0,8539326    0
+FALSE RF  0,7666667 0,7977528 0,8202247 0,8186146 0,8309819 0,8977273    0
+FALSE GBM 0,7640449 0,8000000 0,8202247 0,8238247 0,8426966 0,9111111    0
 FALSE 
 FALSE Kappa 
 FALSE          Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-FALSE BAG 0,3848101 0,5074709 0,5465503 0,5563388 0,5998200 0,7577093    0
-FALSE RF  0,5240642 0,5677434 0,6128404 0,6155934 0,6410325 0,7612732    0
-FALSE GBM 0,4705246 0,5810778 0,6194005 0,6221407 0,6586467 0,7862797    0
+FALSE BAG 0,3324808 0,5248833 0,5534761 0,5469187 0,5837689 0,6957665    0
+FALSE RF  0,4960000 0,5579969 0,6059768 0,6059189 0,6342677 0,7757644    0
+FALSE GBM 0,4917052 0,5714196 0,6082400 0,6185343 0,6547105 0,8110236    0
 \end{verbatim}
 
 \begin{Shaded}
@@ -2628,7 +2628,7 @@ preprocesamiento utilizando el conjunto de datos de entrenamiento.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# prepare parameters for data transform}
+\CommentTok{# preparar parámetros para la transformación de datos}
 \CommentTok{# set.seed(7)}
 \NormalTok{model <-}\StringTok{ }\KeywordTok{svm}\NormalTok{(Survived }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ datasetTrain)}
 
@@ -2707,7 +2707,7 @@ esperados del conjunto de test.
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0,05023923
+## [1] 0,04784689
 \end{verbatim}
 
 \begin{Shaded}
@@ -2732,7 +2732,7 @@ success & fail\tabularnewline
 success & fail\tabularnewline
 \midrule
 \endhead
-0,95 & 0,05\tabularnewline
+0,952 & 0,048\tabularnewline
 \bottomrule
 \end{longtable}
 

@@ -1,4 +1,10 @@
-# titanicDataClean
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# titanicDataClean  
+
 Analiza los datos del dataset de supervivientes del Titanic de la web www.kaggle.com y los analiza para encontrar una pauta de comportamiento general y verificable.
 
 # Práctica 2: Limpieza y validación de los datos
@@ -57,6 +63,8 @@ Por otro lado, la licencia activa las siguientes restricciones:
 ## Ficheros del código fuente
 
 * **src/titanicDataClean**: Es el código completo de gestión de los datos de la web www.kaggle.com que se ha utilizado para el análisis, limpieza y gestión del modelo final de trabajo.
+
+Esta actividad se encuentra en la dirección de GitHub siguiente: https://github.com/rgarciarui/titanicDataClean  
 
 ## Recursos
 

@@ -3,13 +3,6 @@ title: "Titanic Data Clean"
 author: "Ricardo Garcia Ruiz"
 date: '`r format(Sys.Date(),"%e de %B, %Y")`'
 output:
-  html_document:
-    toc: TRUE
-    number_sections: true
-    toc_depth: 3
-    theme: cerulean
-    highlight: tango
-    always_allow_html: yes
   word_document:
     toc: TRUE
     highlight: default
@@ -20,6 +13,13 @@ output:
     number_sections: true
     toc_depth: 3
     keep_tex: true
+  html_document:
+    toc: TRUE
+    number_sections: true
+    toc_depth: 3
+    theme: cerulean
+    highlight: tango
+    always_allow_html: yes
 bibliography: bibliografia.bib
 ---
 
@@ -391,8 +391,8 @@ length(unique(titanic_train$Ticket))
 Este gráfico muestra que algunos de los prefijos de tickt están asociados con precios más altos. La tarifa ya debería dar cuenta de esta variación, por lo tanto, a menos que podamos encontrar otra relación con el prefijo, entonces no vale la pena incluir esta variable.  
 
 ```{r tplot, echo = FALSE}
-titanic_train$FL <- stri_extract_first_regex(titanic_train$Ticket, "[A-Z]+") #Grabs first Text occurence
-titanic_train$FT <- stri_extract_first_regex(titanic_train$Ticket, "[0-9][0-9]+") #Grabs ticket number
+titanic_train$FL <- stri_extract_first_regex(titanic_train$Ticket, "[A-Z]+") #capta primero la ocurrencia del texto
+titanic_train$FT <- stri_extract_first_regex(titanic_train$Ticket, "[0-9][0-9]+") #toma el numero de ticket
 titanic_train[is.na(titanic_train$FL),]$FL <- "NA"
 ```
 
@@ -518,8 +518,8 @@ length(unique(titanic_train$Cabin))
 ```
 
 ```{r cabin, echo = FALSE}
-sum(!substring(titanic_train$Cabin, 1, 1) == "")#Fill in cabin data
-datatable(data.frame(summary(titanic_train$Cabin)), colnames=c("Cabin", "Count")) # is it safe to impute cabin data?
+sum(!substring(titanic_train$Cabin, 1, 1) == "")#Completa los datos de la cabina
+datatable(data.frame(summary(titanic_train$Cabin)), colnames=c("Cabin", "Count")) # ¿Es seguro imputar los datos de la cabina?
 ```
 
 Creamos ahora una variable de la letra de Cabin.  
@@ -591,14 +591,14 @@ Ajustamos los datos faltantes en la variable Age:
 
 ```{r pr, results = 'hide'}
 titanic_train <- as.data.frame(titanic_train)
-#Imputing the missing age values with the MICE package
+#imputar los valores de edad faltantes con el paquete MICE
 impute <- mice(titanic_train[, !names(titanic_train) %in% c('PassengerId','Name','Ticket','Cabin','Survived', 'Assigned','FL','FT','ticketlength','one','two','three','four','five','six','seven')], method='rf')
 
 trained_mouse <- complete(impute)
 ```
 
 ```{r pplot, echo = FALSE, warning = FALSE}
-#Plotting Histograms
+#Trazar histogramas
 ap <- ggplot(titanic_train, aes(x=Age))+geom_density(adjust=.5)+labs(title="Original Data")
 ap
 mp <- ggplot(trained_mouse, aes(x=Age))+geom_density(adjust=.5)+labs(title="Imputed Data")
@@ -637,7 +637,7 @@ Entonces, lo que parece ser un inocente valor perdido aislado es en realidad una
 ```{r bark, echo = FALSE, message=FALSE}
 bark <- titanic_train[grep("*^B", titanic_train$Cabin),] %>% group_by(Embarked)
 bark <- bark[!bark$Embarked=="",]
-#Also, there a 72.4% change of any passenger embarking from Southampton
+#Además, hay un cambio del 72,4% de cualquier pasajero que embarca desde Southampton
 ggplot(bark, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
   geom_boxplot() +
   geom_hline(aes(yintercept=80), 
@@ -690,7 +690,7 @@ Después de realizar esta operación, nuestros datos se ven así:
 
 
 ```{r class_2, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE}
-kable(head(df), caption = "Data set seleccionado",digits = 3, padding = 2, align = 'r')
+kable(head(df), caption = "Dataset seleccionado",digits = 3, padding = 2, align = 'r')
 datatable(df)
 ```
 
@@ -753,10 +753,10 @@ summary(df)
 Visualizamos los histogramas de las cuatro variables de entrada:
 
 ```{r}
-barplot(table(df$Pclass), xlab="Class", ylab="Frequency", main="Histogram of Passenger Class")
-barplot(table(df$Sex), xlab="Sex", ylab="Frequency", main="Histogram of Sex")
-barplot(table(df$Age), xlab="Age", ylab="Frequency", main="Histogram of Age")
-barplot(table(df$Embarked), xlab="Port of Embarkment", ylab="Frequency", main="Histogram of Port of Embarkment")
+barplot(table(df$Pclass), xlab="Class", ylab="Frequency", main="Histograma de Passenger Class")
+barplot(table(df$Sex), xlab="Sex", ylab="Frequencia", main="Histograma de Sex")
+barplot(table(df$Age), xlab="Age", ylab="Frequencia", main="Histograma de Age")
+barplot(table(df$Embarked), xlab="Port of Embarkment", ylab="Frequencia", main="Histograma de Port of Embarkment")
 ```
 
 ### Test
@@ -780,9 +780,9 @@ me_pclass = c(0,0,0)
 me_pclass[1] = mean(df$Survived[df$Pclass==1])
 me_pclass[2] = mean(df$Survived[df$Pclass==2])
 me_pclass[3] = mean(df$Survived[df$Pclass==3])
-plot(me_pclass, type="o", main="Main Effect of Passenger Class", xlab="Passenger Class", ylab="Main Effect",
+plot(me_pclass, type="o", main="Efecto principal de Passenger Class", xlab="Passenger Class", ylab="Efecto principal",
      xaxt="n")
-axis(1, at=c(1,2,3), labels=c("1st", "2nd", "3rd"))
+axis(1, at=c(1,2,3), labels=c("1er", "2nd", "3er"))
 ```
 
 Las sobrevivientes femeninas eran mucho más numerosas que los hombres.
@@ -791,8 +791,8 @@ Las sobrevivientes femeninas eran mucho más numerosas que los hombres.
 me_sex = c(0,0)
 me_sex[1] = mean(df$Survived[df$Sex==1])
 me_sex[2] = mean(df$Survived[df$Sex==2])
-plot(me_sex, type="o", main="Main Effect of Sex", xlab="Sex", ylab="Main Effect", xaxt="n")
-axis(1, at=c(1,2), labels=c("Female", "Male"))
+plot(me_sex, type="o", main="Efecto principal de Sex", xlab="Sex", ylab="Efecto principal", xaxt="n")
+axis(1, at=c(1,2), labels=c("Mujer", "Hombre"))
 ```
 
 Los supervivientes máximos en promedio de la categoría de edad eran niños, seguidos de adultos y personas mayores.  
@@ -802,7 +802,7 @@ me_age = c(0,0,0)
 me_age[1] = mean(df$Survived[df$Age==1])
 me_age[2] = mean(df$Survived[df$Age==2])
 me_age[3] = mean(df$Survived[df$Age==3])
-plot(me_age, type="o", main="Main Effect of Age", xlab="Age", ylab="Main Effect", xaxt="n")
+plot(me_age, type="o", main="Efecto principal de Age", xlab="Age", ylab="Efecto principal", xaxt="n")
 axis(1, at=c(1,2,3), labels=c("Adult", "Children", "Senior Citizen"))
 ```
 
@@ -813,7 +813,7 @@ me_emb = c(0,0,0)
 me_emb[1] = mean(df$Survived[df$Embarked==1])
 me_emb[2] = mean(df$Survived[df$Embarked==2])
 me_emb[3] = mean(df$Survived[df$Embarked==3])
-plot(me_emb, type="o", main="Main Effect of Port of Embarkment", xlab="Port of Embarkment", ylab="Main Effect",
+plot(me_emb, type="o", main="Efecto principal de Port of Embarkment", xlab="Port of Embarkment", ylab="Efecto principal",
      xaxt="n")
 axis(1, at=c(1,2,3), labels=c("Cherbourg", "Queenstown", "Southampton"))
 ```
@@ -821,24 +821,24 @@ axis(1, at=c(1,2,3), labels=c("Cherbourg", "Queenstown", "Southampton"))
 Existe un claro efecto de interacción entre la clase de pasajeros y el sexo. Los pasajeros femeninos de primera y segunda clase tuvieron un mayor número de sobrevivientes que las pasajeras de tercera clase. Los pasajeros varones de primera clase tenían un número promedio mayor de sobrevivientes que los pasajeros masculinos de segunda y tercera clase.  
 
 ```{r}
-interaction.plot(df$Pclass, df$Sex, df$Survived, xlab="Passenger Class", ylab="Mean number of Survivors",
-                  main="Interaction Effect between Passenger Class and Sex", legend=FALSE)
-legend("topright", c("Female","Male"), lty=c("dashed", "solid"), title="Sex")
+interaction.plot(df$Pclass, df$Sex, df$Survived, xlab="Passenger Class", ylab="Número promedio de sobrevivientes",
+                  main="Efecto de interacción entre Passenger Class y Sex", legend=FALSE)
+legend("topright", c("Mujer","Hombre"), lty=c("dashed", "solid"), title="Sex")
 ```
 
 Hay un efecto de interacción entre la clase de pasajero y la edad. En general, los adultos tenían una media de sobrevivientes mejor que las personas mayores, que eran mejores que los niños. Más adultos de 1ra clase sobrevivieron que la 2da clase, que tuvo más sobrevivientes que la 3ra clase. Lo mismo es la tendencia para las personas mayores también. Sin embargo, el número promedio de sobrevivientes fue más alto para los niños de 2a clase y el más bajo para los niños de 1ra clase.  
 
 ```{r}
-interaction.plot(df$Pclass, df$Age, df$Survived, xlab="Passenger Class", ylab="Mean number of Survivors",
-                 main="Interaction Effect between Passenger Class and Age", legend=FALSE)
+interaction.plot(df$Pclass, df$Age, df$Survived, xlab="Passenger Class", ylab="Número promedio de sobrevivientes",
+                 main="Efecto de interacción entre Passenger Class y Age", legend=FALSE)
 legend("topright", c("Adult","Child", "Senior"), lty=c("dashed", "solid", "dotted"), title="Age")
 ```
 
 También hay un efecto de interacción entre la Clase de Pasajero y el Puerto de Embarque. Para los pasajeros que abordaron el barco desde Queenstown y Southampton, los pasajeros de primera clase sobrevivieron más y los pasajeros de tercera clase sobrevivieron lo mínimo. Para los pasajeros que abordaron el barco desde Cherbourg, el número medio de supervivientes era casi el mismo para los pasajeros de 1ra y 2da clase, que eran mayores que los pasajeros de 3ra clase. Para los pasajeros de segunda y tercera clase que abordaron desde Cherbourg y Queenstown, no parece haber ningún efecto de interacción.
 
 ```{r}
-interaction.plot(df$Pclass, df$Embarked, df$Survived, xlab="Passenger Class", ylab="Mean number of Survivors",
-                 main="Interaction Effect between Passenger Class and Port of Embarkment", legend=FALSE)
+interaction.plot(df$Pclass, df$Embarked, df$Survived, xlab="Passenger Class", ylab="Número promedio de sobrevivientes",
+                 main="Efecto de interacción entre Passenger Class y Port of Embarkment", legend=FALSE)
 legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "solid", "dotted"),
        title="Port of Embarkment")
 ```
@@ -848,8 +848,8 @@ Es interesante observar que en un momento tan crítico (cuando el barco se hund�
 Parece haber un efecto de interacción entre la edad y el sexo. Hubo más sobrevivientes de hombres que adultos varones, que fueron mayores que los varones. Por el contrario, hubo más sobrevivientes de niñas que mujeres de la tercera edad, que fueron mayores que las mujeres adultas. En general, hubo más mujeres supervivientes en comparación con los hombres en todos los grupos de edad.  
 
 ```{r}
-interaction.plot(df$Sex, df$Age, df$Survived, xlab="Sex", ylab="Mean number of Survivors",
-                 main="Interaction Effect between Sex and Age", legend=FALSE, xtick=FALSE, xaxt="n")
+interaction.plot(df$Sex, df$Age, df$Survived, xlab="Sex", ylab="Número promedio de sobrevivientes",
+                 main="Efecto de interacción entre Sex y Age", legend=FALSE, xtick=FALSE, xaxt="n")
 axis(1, c(1,2), labels=c("Female", "Male"))
 legend("topright", c("Adult","Child", "Senior"), lty=c("dashed", "solid", "dotted"), title="Age")
 ```
@@ -857,8 +857,8 @@ legend("topright", c("Adult","Child", "Senior"), lty=c("dashed", "solid", "dotte
 No parece haber ningún efecto de interacción entre Sexo y Puerto de Embarque.  
 
 ```{r}
-interaction.plot(df$Sex, df$Embarked, df$Survived, xlab="Sex", ylab="Mean number of Survivors", 
-                 main="Interaction Effect between Sex and Port of Embarkment", legend=FALSE, xtick = FALSE, xaxt="n")
+interaction.plot(df$Sex, df$Embarked, df$Survived, xlab="Sex", ylab="Número promedio de sobrevivientes", 
+                 main="Efecto de interacción entre Sex y Port of Embarkment", legend=FALSE, xtick = FALSE, xaxt="n")
 axis(1, c(1,2), labels=c("Female", "Male"))
 legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "solid", "dotted"),
        title="Port of Embarkment")
@@ -867,8 +867,8 @@ legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "s
 Hay un efecto de interacción entre la edad y el puerto de embarque. Los jubilados de Southampton y Cherbourg sobrevivieron en menor número que los que abordaron el barco desde Queenstown. Para adultos y niños, las personas que abordaron en Southampton sobrevivieron más que las de Queenstown, que eran más que las de Cherbourg. No parece haber un efecto de interacción en la parte adultos-niños del gráfico.  
 
 ```{r}
-interaction.plot(df$Age, df$Embarked, df$Survived, xlab="Age", ylab="Mean number of Survivors", 
-                 main="Interaction Effect between Age and Port of Embarkment", legend=FALSE, xtick = FALSE, xaxt="n")
+interaction.plot(df$Age, df$Embarked, df$Survived, xlab="Age", ylab="Número promedio de sobrevivientes", 
+                 main="Efecto de interacción entre Age y Port of Embarkment", legend=FALSE, xtick = FALSE, xaxt="n")
 axis(1, c(1,2,3), labels=c("Adults", "Children", "Senior Citizens"))
 legend("topright", c("Cherbourg","Queenstown","Southampton"), lty=c("dashed", "solid", "dotted"),
        title="Port of Embarkment")
@@ -1004,7 +1004,7 @@ sapply(datasetTrain, class)
 Echemos un vistazo más de cerca a las distribuciones de clase.  
 
 ```{r datasetTrain_class}
-# class distribution
+# distribución de clases
 cbind(freq=table(datasetTrain$Survived), percentage=prop.table(table(datasetTrain$Survived))*100)
 ```
 
@@ -1023,7 +1023,7 @@ Los valores por encima de 0,75 o por debajo de -0,75 son indicativos de una corr
 ### Visualizacion del conjunto de datos
 
 ```{r datasetTrain_plot_01}
-# barplot of males and females who survived
+# barra de hombres y mujeres que sobrevivieron
 barplot(table(datasetTrain$Survived, datasetTrain[,3]))
 legend("topleft", legend = c("Mueren", "Sobreviven"), fill=c("black","grey"))
 ```
@@ -1041,7 +1041,7 @@ library(corrplot)
 
 
 ```{r datasetTrain_hardness}
-# 10-fold cross validation with 3 repeats
+# 10-fold validación cruzada con 3 repeticiones
 trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
 metric <- "Accuracy"
 ```
@@ -1101,7 +1101,7 @@ fit.svm <- train(Survived~., data=datasetTrain, method="svmRadial", metric=metri
 ```
 
 ```{r datasetTrain_compare, warning=FALSE, comment=FALSE, message=FALSE}
-# Compare algorithms
+# Comparar algorithms
 results <- resamples(list(LG=fit.glm, LDA=fit.lda, GLMNET=fit.glmnet, KNN=fit.knn,
     CART=fit.cart, NB=fit.nb, SVM=fit.svm))
 summary(results)
@@ -1119,8 +1119,8 @@ SVM tiene la mayor precisión con un 82%.
 Aplicaríamos una transformación Box-Cox para aplanar la distribución.  
 
 ```{r datasetTrain_evaluate, warning=FALSE, comment=FALSE, message=FALSE}
-# Compare algorithms
-# 10-fold cross validation with 3 repeats
+# Comparar algorithms
+# 10-fold validación cruzada con 3 repeticiones
 trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
 metric <- "Accuracy"
 # LG
@@ -1172,7 +1172,7 @@ Vamos ahora a probar un poco de ajuste de los mejores algoritmos, específicamen
 La implementación SVM tiene dos parámetros que podemos sintonizar con el paquete caret. El sigma, que es un término de suavizado, y C, que es una restricción de costos.  
 
 ```{r datasetTrain_precission, warning=FALSE, comment=FALSE, message=FALSE}
-# 10-fold cross validation with 3 repeats
+# 10-fold validación cruzada con 3 repeticiones
 trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
 metric <- "Accuracy"
 set.seed(7)
@@ -1211,7 +1211,7 @@ library(parallel)
 
 ```{r datasetTrain_ensembles, warning=FALSE, comment=FALSE, message=FALSE}
 
-# 10-fold cross validation with 3 repeats
+# 10-fold validación cruzada con 3 repeticiones
 trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
 metric <- "Accuracy"
 
@@ -1253,7 +1253,7 @@ Vamos a finalizar el modelo de SVM para usar en todo nuestro conjunto de entrena
 Tendremos que eliminar las filas con valores perdidos del conjunto de datos de entrenamiento, así como el conjunto de datos de validación. El siguiente código muestra la preparación de los parámetros de preprocesamiento utilizando el conjunto de datos de entrenamiento.
 
 ```{r datasetTrain_final_model, warning=FALSE, comment=FALSE, message=FALSE}
-# prepare parameters for data transform
+# preparar parámetros para la transformación de datos
 # set.seed(7)
 model <- svm(Survived ~ ., data = datasetTrain)
 
