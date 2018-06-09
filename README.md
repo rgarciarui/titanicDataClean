@@ -1,5 +1,5 @@
 # titanicDataClean
-Analiza los datos del dataset de supervivientes del Titanis de la web www.kaggle.com y los analiza para encontrar una pauta de comportamiento general y verificable.
+Analiza los datos del dataset de supervivientes del Titanic de la web www.kaggle.com y los analiza para encontrar una pauta de comportamiento general y verificable.
 
 # Práctica 2: Limpieza y validación de los datos
 

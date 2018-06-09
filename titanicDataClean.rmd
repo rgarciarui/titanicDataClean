@@ -3,13 +3,6 @@ title: "Titanic Data Clean"
 author: "Ricardo Garcia Ruiz"
 date: '`r format(Sys.Date(),"%e de %B, %Y")`'
 output:
-  html_document:
-    toc: TRUE
-    number_sections: true
-    toc_depth: 3
-    theme: cerulean
-    highlight: tango
-    always_allow_html: yes
   pdf_document:
     toc: TRUE
     highlight: default
@@ -20,6 +13,13 @@ output:
     toc: TRUE
     highlight: default
     toc_depth: 3
+  html_document:
+    toc: TRUE
+    number_sections: true
+    toc_depth: 3
+    theme: cerulean
+    highlight: tango
+    always_allow_html: yes
 bibliography: bibliografia.bib
 ---
 
@@ -1276,7 +1276,13 @@ testData <- predict(preprocessParams, testData)
 
 predictions <- predict(model, testData, type="class")
 submit <- data.frame(PassengerId = datasetTest$PassengerId, Survived = predictions)
+
+# ajustamos la salidad de los resultados
+csv_dir = paste(baseDirectory, "/", "resultados", sep="")
+setwd(csv_dir)
 write.csv(submit, file = "firstSVM.csv", row.names = FALSE)
+# retornamos al directorio para trabajar con el shp
+setwd(baseDirectory)
 ```
 
 
@@ -1331,8 +1337,8 @@ Como se puede ver, el acierto esta por encima del 94%, aunque siempre es posible
 Ahora mostramos una distribución de las prediciones finales:  
 
 ```{r prediciton_plot}
-ggplot( aes(x = predictions, fill = factor(predictions))) +
-  geom_bar(stat='count', position='dodge') 
+ggplot(as.data.frame(as.integer(predictions)) , aes(x = predictions, fill = factor(predictions))) +
+  geom_bar(stat='count', position='dodge')
 ```
 
 
