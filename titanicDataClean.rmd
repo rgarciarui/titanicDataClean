@@ -3,16 +3,6 @@ title: "Titanic Data Clean"
 author: "Ricardo Garcia Ruiz"
 date: '`r format(Sys.Date(),"%e de %B, %Y")`'
 output:
-  pdf_document:
-    toc: TRUE
-    highlight: default
-    number_sections: true
-    toc_depth: 3
-    keep_tex: true
-  word_document:
-    toc: TRUE
-    highlight: default
-    toc_depth: 3
   html_document:
     toc: TRUE
     number_sections: true
@@ -20,6 +10,16 @@ output:
     theme: cerulean
     highlight: tango
     always_allow_html: yes
+  word_document:
+    toc: TRUE
+    highlight: default
+    toc_depth: 3
+  pdf_document:
+    toc: TRUE
+    highlight: default
+    number_sections: true
+    toc_depth: 3
+    keep_tex: true
 bibliography: bibliografia.bib
 ---
 
