@@ -93,6 +93,14 @@ En esta práctica se desarrollan las siguientes competencias del Máster de **Da
 * Capacidad de analizar un problema en el nivel de abstracción adecuado a cada situación y aplicar las habilidades y conocimientos adquiridos para abordarlo y resolverlo.
 * Capacidad para aplicar las técnicas específicas de tratamiento de datos (integración, transformación, limpieza y validación) para su posterior análisis.  
 
+# Integración y selección de los datos de interés a analizar.
+
+El proceso de integración y selección de los datos a analizar se irá realizando a lo largo del proceso de limpieza y analisis de las distintas variables del conjunto de datos de entrenamiento de Titanic.
+
+Realizarlo de una manera aprioristica no mejora el proceso de verificación de comportamiento de las variables del conjunto ni da en ningún caso un planteamiento del problema mejorado.
+
+En este proceso se pretende ir analizando las distintas variables en el proceso de limpieza y análisis, y en función de las características observables de las diversas variables se tomará la decisión de utilizar un conjunto seleccionado de las mismas que pueda ser útil para la predicción del modelo y la comprobación con el conjunto de test o validación.  
+
 
 # Proceso de limpieza del dataset **titanic**
 
@@ -1270,6 +1278,80 @@ predictions <- predict(model, testData, type="class")
 submit <- data.frame(PassengerId = datasetTest$PassengerId, Survived = predictions)
 write.csv(submit, file = "firstSVM.csv", row.names = FALSE)
 ```
+
+
+# Representación de los resultados a partir de tablas y gráficas
+
+Datos del test:  
+
+```{r prediction}
+plot(testData)
+#plot(predictions)
+```
+
+```{r prediction_02}
+
+predictedTest_mg = merge(x = submit, y = datasetTest,by.x="PassengerId", by.y =  "PassengerId")
+predicted_names = names(predictedTest_mg)
+predicted_names[2]="Surv. Predicted"
+predicted_names[3]="Surv. Original"
+names(predictedTest_mg) = predicted_names
+
+wrongSurvivedPred = predictedTest_mg[predictedTest_mg$`Surv. Predicted`!=predictedTest_mg$`Surv. Original`,]
+successSurvivedPred = predictedTest_mg[predictedTest_mg$`Surv. Predicted`==predictedTest_mg$`Surv. Original`,]
+
+datatable(wrongSurvivedPred)
+
+
+```
+
+La anterior es una tabla con los resultados que no se aciertan con los esperados del conjunto de test.  
+
+```{r prediction_03}
+
+length(wrongSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
+
+success = length(successSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
+fail = length(wrongSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
+
+df.pred.results = data.frame(success = success, fail = fail)
+
+```
+
+
+Se muestran los porcentajes de acierto sobre los resultados esperados:  
+
+```{r prediction_04, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE}
+kable(df.pred.results, caption = "Porcentajes de resultados de acierto en la predicción con SVM",digits = 3, padding = 2, align = 'l')
+
+```
+
+Como se puede ver, el acierto esta por encima del 94%, aunque siempre es posible mejorarlo.  
+
+Ahora mostramos una distribución de las prediciones finales:  
+
+```{r prediciton_plot}
+ggplot( aes(x = predictions, fill = factor(predictions))) +
+  geom_bar(stat='count', position='dodge') 
+```
+
+
+# Resolución del problema
+
+A partir de los resultado obtenidos podemos indicar que de todos los modelos analizados, el modelo utilizado de SVM permite acercarse a un porcentaje de resolución del 95% en el acierto de los resultados de supervivencia de los pasajeros del Titanic. Según todas la pruebas estadísticas realziadas, el SVM era el que mejor respondia sobre los diversos modelos propuestos para la resolución del problema.
+
+Los resultados permiten responder los planteamientos inciales del problema, a saber, que con los datos aportados por el dataset se pueden extraer conclusiones sobre la posibilidad de supervivencia de los pasajeros en función de las variables aportadas.  
+
+como se ha podido comprobar, no se ha utilizado una selección a priori de las variables a utilizar para abordar la resolución del problema, ya que se ha considerado más prudente observar el comportamiento de las variables, su ajuste en el proceso de limpieza y análisis, y el posterior comportamiento en las métricas de resultados segun se han ido realizando pruebas con los distintos modelos.  
+
+
+# Código en R
+
+Este modelo de resolución de supervivencia del titanic se encuentra en el repositorio GitHub, en la localización: https://github.com/rgarciarui/titanicDataClean 
+
+
+
+
 
 
 

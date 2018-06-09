@@ -751,3 +751,57 @@ predictions <- predict(model, testData, type="class")
 submit <- data.frame(PassengerId = datasetTest$PassengerId, Survived = predictions)
 write.csv(submit, file = "firstSVM.csv", row.names = FALSE)
 
+predictedTest_mg = merge(x = submit, y = datasetTest,by.x="PassengerId", by.y =  "PassengerId")
+predicted_names = names(predictedTest_mg)
+predicted_names[2]="Surv. Predicted"
+predicted_names[3]="Surv. Original"
+names(predictedTest_mg) = predicted_names
+
+wrongSurvivedPred = predictedTest_mg[predictedTest_mg$`Surv. Predicted`!=predictedTest_mg$`Surv. Original`,]
+successSurvivedPred = predictedTest_mg[predictedTest_mg$`Surv. Predicted`==predictedTest_mg$`Surv. Original`,]
+
+datatable(wrongSurvivedPred)
+
+length(wrongSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
+
+success = length(successSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
+fail = length(wrongSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
+
+df.pred.results = data.frame(success = success, fail = fail)
+
+table(df.pred.results)
+
+ggplot( aes(x = predictions, fill = factor(predictions))) +
+  geom_bar(stat='count', position='dodge') 
+
+
+
+library(rattle)
+
+TreeGrid <- expand.grid(.cp = 0.004)
+
+trControl <- trainControl(method = "cv", number = 10, classProbs = FALSE)
+
+fit.svm <- train(Survived~., data=datasetTrain, method="svmRadial", 
+                 metric=metric, tuneGrid=grid,
+                 preProc=c("BoxCox"), trControl=trainControl)
+
+fit.svm <- train(Survived~., 
+                data = testData, 
+                method = "svmRadial", 
+                metric = "Accuracy", 
+                maximize = TRUE, 
+                trControl = trControl, 
+                tuneGrid = TreeGrid)
+
+fancyRpartPlot(fit.svm$finalModel)
+
+
+
+
+
+
+
+
+
+
