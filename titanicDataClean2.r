@@ -22,10 +22,7 @@ csv_dir = paste(baseDirectory, "/", "titanic", sep="")
 # cambio directorio para ver datos shp
 knitr::opts_knit$set(root.dir = csv_dir)
 
-# cambio directorio para ver datos shp
-setwd(csv_dir)
-
-## ----read_dataset, echo=FALSE, cache=FALSE, results = 'asis', warning=FALSE, comment=FALSE, warning=FALSE----
+## ----read_dataset, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE----
 titanic_train <- read.csv("train.csv", header = TRUE)
 titanic_test <- read.csv("test.csv", header = TRUE)
 titanic_test.label <- read.csv("gender_submission.csv", header = TRUE)
@@ -34,9 +31,6 @@ titanic_test = titanic_test[,c(1,12,2:11)]
 
 titanic_train <- as.data.table(titanic_train)
 titanic_test <- as.data.table(titanic_test)
-
-# retornamos al directorio para trabajar con el shp
-setwd(baseDirectory)
 
 kable(head(titanic_train), caption = "train.csv",digits = 3, padding = 2, align = 'r')
 kable(head(titanic_test), caption = "test.csv",digits = 3, padding = 2, align = 'r')
@@ -751,6 +745,12 @@ predictions <- predict(model, testData, type="class")
 submit <- data.frame(PassengerId = datasetTest$PassengerId, Survived = predictions)
 write.csv(submit, file = "firstSVM.csv", row.names = FALSE)
 
+## ----prediction----------------------------------------------------------
+plot(testData)
+#plot(predictions)
+
+## ----prediction_02-------------------------------------------------------
+
 predictedTest_mg = merge(x = submit, y = datasetTest,by.x="PassengerId", by.y =  "PassengerId")
 predicted_names = names(predictedTest_mg)
 predicted_names[2]="Surv. Predicted"
@@ -762,6 +762,10 @@ successSurvivedPred = predictedTest_mg[predictedTest_mg$`Surv. Predicted`==predi
 
 datatable(wrongSurvivedPred)
 
+
+
+## ----prediction_03-------------------------------------------------------
+
 length(wrongSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
 
 success = length(successSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv. Predicted`)
@@ -769,39 +773,12 @@ fail = length(wrongSurvivedPred$`Surv. Predicted`)/length(predictedTest_mg$`Surv
 
 df.pred.results = data.frame(success = success, fail = fail)
 
-table(df.pred.results)
 
+## ----prediction_04, echo=FALSE, cache=FALSE, results = 'asis', comment=FALSE, warning=FALSE----
+kable(df.pred.results, caption = "Porcentajes de resultados de acierto en la predicción con SVM",digits = 3, padding = 2, align = 'l')
+
+
+## ----prediciton_plot-----------------------------------------------------
 ggplot( aes(x = predictions, fill = factor(predictions))) +
   geom_bar(stat='count', position='dodge') 
-
-
-
-library(rattle)
-
-TreeGrid <- expand.grid(.cp = 0.004)
-
-trControl <- trainControl(method = "cv", number = 10, classProbs = FALSE)
-
-fit.svm <- train(Survived~., data=datasetTrain, method="svmRadial", 
-                 metric=metric, tuneGrid=grid,
-                 preProc=c("BoxCox"), trControl=trainControl)
-
-fit.svm <- train(Survived~., 
-                data = testData, 
-                method = "svmRadial", 
-                metric = "Accuracy", 
-                maximize = TRUE, 
-                trControl = trControl, 
-                tuneGrid = TreeGrid)
-
-fancyRpartPlot(fit.svm$finalModel)
-
-
-
-
-
-
-
-
-
 
