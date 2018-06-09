@@ -690,9 +690,9 @@ library(gbm)
 library(survival)
 library(splines)
 library(parallel)
-library(C50)
 
 ## ----datasetTrain_ensembles, warning=FALSE, comment=FALSE, message=FALSE----
+
 # 10-fold cross validation with 3 repeats
 trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
 metric <- "Accuracy"
@@ -718,6 +718,7 @@ fit.gbm <- train(Survived~., data=datasetTrain, method="gbm", metric=metric, pre
 #    trControl=trainControl)
 
 # Compare results
+#ensembleResults <- resamples(list(BAG=fit.treebag, RF=fit.rf, GBM=fit.gbm, C50=fit.c50))
 ensembleResults <- resamples(list(BAG=fit.treebag, RF=fit.rf, GBM=fit.gbm))
 summary(ensembleResults)
 
