@@ -1,7 +1,7 @@
-# videogamesScraper
-Extrae los datos de video juegos desde el año 1976 a 2018 aproximadamente
+# titanicDataClean
+Analiza los datos del dataset de supervivientes del Titanis de la web www.kaggle.com y los analiza para encontrar una pauta de comportamiento general y verificable.
 
-# Práctica 1: Web scraping
+# Práctica 2: Limpieza y validación de los datos
 
 ## Descripción
 
@@ -56,34 +56,13 @@ Por otro lado, la licencia activa las siguientes restricciones:
 
 ## Ficheros del código fuente
 
-* **src/videogamesScraper**: Es el código de entrada al scraping y contiene el código principal utilizado para gestionar el trabajo de compilación de toda la base de datos retro de videojuegos de la web **RetroCollect**.
-* **src/getPlatformDB**: Contiene el código fuente de la función **getPlatformDB()**. Esta función accede a la web de RetroCollet y obtiene un data frame con los códigos numérícos y sus equivalencias en texto de los nombres de las Plataformas disponibles en RetroCollect. Con esta función se puede realizar un filtro por tipo de plataforma, o bien toda la base de datos de videojuegos (por defecto).
-* **src/searchPaginationDB**: Contiene el código fuente de la función **searchPaginationDB()**. La función realiza una búsqueda en la web localizando la página web última en la que se deben buscar los datos de scraping, devolviendo un valor numérico con la última página que se debe acceder. Los paramétros son los siguientes:
-  + **url_base**: La dirección web generalde acceso a RetroCollect
-  + **listview**: Sistema de visualización, por defecto *'list'*
-  + **modeview**:   Por defecto se buscan *'games'*
-  + **plataforma**: La plataforma de filtro, por defecto = 0, todas sin excepcion
-  + **sort**:       Esquema de ordenación, puede tomar 4 parámetros:
-    + *'title'*, es el defectivo y es igual a **NA**
-    + *'system'*, organiza por S.O. y es igual a *"platform"*
-    + *'publisher'*, organiza por cia. de publicación y es igual a *"publisher"*
-    + *'year'*, organiza por año de publicación y es igual a *"year"*
-  + **filas**:      Indica el numero de filas de visualización por página, defecto = 20
-  + **verbose**:    Indica si se desea o no información de progreso, defecto = *TRUE*
-* **src/accessVideoGameDatabase**: Contiene el código fuente de la función **accessVideoGameDatabase()**. La función realiza un web scrapin en RetroCollect, posibilitando un acceso dinamico a la misma y configurando algunos parametros de control en la llamada a la pagina web de RetroCollect indicando algunas variables de carga y control de visualización. Los paramétros son los siguientes:
-  + **url_base**: La dirección web generalde acceso a RetroCollect
-  + **listview**: Sistema de visualización, por defecto *'list'*
-  + **modeview**:   Por defecto se buscan *'games'*
-  + **plataforma**: La plataforma de filtro, por defecto = 0, todas sin excepcion
-  + **sort**:       Esquema de ordenación, puede tomar 4 parámetros:
-    + *'title'*, es el defectivo y es igual a **NA**
-    + *'system'*, organiza por S.O. y es igual a *"platform"*
-    + *'publisher'*, organiza por cia. de publicación y es igual a *"publisher"*
-    + *'year'*, organiza por año de publicación y es igual a *"year"*
-  + **filas**:      Indica el numero de filas de visualización por página, defecto = 20
-  + **verbose**:    Indica si se desea o no información de progreso, defecto = *TRUE*
+* **src/titanicDataClean**: Es el código completo de gestión de los datos de la web www.kaggle.com que se ha utilizado para el análisis, limpieza y gestión del modelo final de trabajo.
 
 ## Recursos
 
-1. Simon Munzert, Christian Rubba, Peter Meißner, Dominic Nyhuis. (2015). _Automated Data Collection with R: A Practical Guide to Web Scraping and Text Mining._ John Wiley & Sons
-2. Garcia Ruiz, Ricardo. (2014). _Estudio y caracterización de marcas de videojuegos mediante análisis de la producción de patentes y el desarrollo técnico de software para plataformas de videojuegos._ Universitat Internacional de Catalunya, DOI: 10.13140/2.1.5162.0166. 
+1. Squire, Megan (2015). Clean Data. Packt Publishing Ltd.
+2. Jiawei Han, Micheine Kamber, Jian Pei (2012). Data mining: concepts and techniques. Morgan Kaufmann.
+3. Jason W. Osborne (2010). Data Cleaning Basics: Best Practices in Dealing with Extreme Scores. Newborn and Infant Nursing Reviews; 10 (1): pp. 1527-3369.
+Peter Dalgaard (2008). Introductory statistics with R. Springer Science & Business Media.
+4. Wes McKinney (2012). Python for Data Analysis. O’Reilley Media, Inc.
+Tutorial de Github (https://guides.github.com/activities/hello-world/)
