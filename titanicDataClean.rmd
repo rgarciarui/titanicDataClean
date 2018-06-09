@@ -1248,7 +1248,19 @@ Tendremos que eliminar las filas con valores perdidos del conjunto de datos de e
 # prepare parameters for data transform
 # set.seed(7)
 model <- svm(Survived ~ ., data = datasetTrain)
-testData <- datasetTest[,c(-1, -8, -10, -11)]
+
+# se eliminan variables redundantes
+datasetTrain <- titanic_test[,c(-3, -8, -10, -11, -c(12:23))]
+
+# Se ajustan los datos como en el conjunto de entrenamiennto
+datasetTest <- titanic_test
+testData <- datasetTest[,c(-1, -4, -9, -11, -12)]
+
+testData$Pclass = as.integer(testData$Pclass)
+testData$Age = as.integer(testData$Age)
+testData$Sex <- as.numeric(testData$Sex)
+testData$Survived <- as.factor(testData$Survived)
+
 preprocessParams <- preProcess(testData, method=c("BoxCox"))
 testData$Age[is.na(testData$Age)] <- 0
 testData$Fare[is.na(testData$Fare)] <- 0

@@ -732,6 +732,7 @@ model <- svm(Survived ~ ., data = datasetTrain)
 # se eliminan variables redundantes
 datasetTrain <- titanic_test[,c(-3, -8, -10, -11, -c(12:23))]
 
+# Se ajustan los datos como en el conjunto de entrenamiennto
 datasetTest <- titanic_test
 testData <- datasetTest[,c(-1, -4, -9, -11, -12)]
 
