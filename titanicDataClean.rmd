@@ -3,10 +3,6 @@ title: "Titanic Data Clean"
 author: "Ricardo Garcia Ruiz"
 date: '`r format(Sys.Date(),"%e de %B, %Y")`'
 output:
-  word_document:
-    toc: TRUE
-    highlight: default
-    toc_depth: 3
   pdf_document:
     toc: TRUE
     highlight: default
@@ -20,6 +16,10 @@ output:
     theme: cerulean
     highlight: tango
     always_allow_html: yes
+  word_document:
+    toc: TRUE
+    highlight: default
+    toc_depth: 3
 bibliography: bibliografia.bib
 ---
 
@@ -1348,7 +1348,7 @@ A partir de los resultado obtenidos podemos indicar que de todos los modelos ana
 
 Los resultados permiten responder los planteamientos inciales del problema, a saber, que con los datos aportados por el dataset se pueden extraer conclusiones sobre la posibilidad de supervivencia de los pasajeros en función de las variables aportadas.  
 
-como se ha podido comprobar, no se ha utilizado una selección a priori de las variables a utilizar para abordar la resolución del problema, ya que se ha considerado más prudente observar el comportamiento de las variables, su ajuste en el proceso de limpieza y análisis, y el posterior comportamiento en las métricas de resultados segun se han ido realizando pruebas con los distintos modelos.  
+Como se ha podido comprobar, no se ha utilizado una selección a priori de las variables a utilizar para abordar la resolución del problema, ya que se ha considerado más prudente observar el comportamiento de las variables, su ajuste en el proceso de limpieza y análisis, y el posterior comportamiento en las métricas de resultados segun se han ido realizando pruebas con los distintos modelos.  
 
 
 # Código en R
